@@ -1282,7 +1282,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           // Selettore Tempi
           Row(
             children: [
-              _periodBtn(1, '1°T', '1° Tempo'), _periodBtn(2, '2°T', '2° Tempo'), _periodBtn(3, '1°TS', '1° Tempo Supplementare'), _periodBtn(4, '2°TS', '2° Tempo Supplementare'), _periodBtn(5, 'RIG', 'Rigori'),
+              _periodBtn(1, '1°T', '1° T'), _periodBtn(2, '2°T', '2° T'), _periodBtn(3, '1°TS', '1°TS'), _periodBtn(4, '2°TS', '2°TS'), _periodBtn(5, 'RIG', 'Rigori'),
             ],
           ),
 

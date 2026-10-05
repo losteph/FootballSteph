@@ -345,7 +345,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                         labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                         tabs: [
                           Tab(text: '👥 Formazioni & Voti'),
-                          Tab(text: '📜 Cronaca Saliente'),
+                          Tab(text: '📜 Cronaca'),
                         ],
                       ),
                     ),
