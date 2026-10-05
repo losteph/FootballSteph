@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../models/player_model.dart';
 import '../services/storage_service.dart';
 import '../widgets/player_fut_card.dart';
 
 class DatabaseScreen extends StatefulWidget {
-  const DatabaseScreen({super.key});
+  final VoidCallback? onDataChanged;
+  
+  const DatabaseScreen({super.key, this.onDataChanged});
 
   @override
   State<DatabaseScreen> createState() => _DatabaseScreenState();
@@ -38,6 +39,7 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
 
   Future<void> _persist() async {
     await StorageService.savePlayers(_allPlayers);
+    widget.onDataChanged?.call();
     setState(() {});
   }
 
@@ -272,9 +274,9 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
           child: Row(
             children: [
               _buildFilterChip('Tutti i Livelli', 'ALL', _tierFilter, (v) => setState(() => _tierFilter = v)),
-              _buildFilterChip('🏆 Oro', 'GOLD', _tierFilter, (v) => setState(() => _tierFilter = v)),
-              _buildFilterChip('🥈 Argento', 'SILVER', _tierFilter, (v) => setState(() => _tierFilter = v)),
-              _buildFilterChip('🥉 Bronzo', 'BRONZE', _tierFilter, (v) => setState(() => _tierFilter = v)),
+              _buildFilterChip('🥇 ORO', 'GOLD', _tierFilter, (v) => setState(() => _tierFilter = v)),
+              _buildFilterChip('🥈 ARGENTO', 'SILVER', _tierFilter, (v) => setState(() => _tierFilter = v)),
+              _buildFilterChip('🥉 BRONZO', 'BRONZE', _tierFilter, (v) => setState(() => _tierFilter = v)),
             ],
           ),
         ),

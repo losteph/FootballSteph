@@ -10,14 +10,19 @@ class SquadBuilderScreen extends StatefulWidget {
   const SquadBuilderScreen({super.key, this.onSendToScoreboard});
 
   @override
-  State<SquadBuilderScreen> createState() => _SquadBuilderScreenState();
+  State<SquadBuilderScreen> createState() => SquadBuilderScreenState();
 }
 
-class _SquadBuilderScreenState extends State<SquadBuilderScreen> {
+class SquadBuilderScreenState extends State<SquadBuilderScreen> {
   List<PlayerModel> _allPlayers = [];
   final Set<String> _selectedIds = {};
   MatchTeams? _generatedTeams;
   bool _isLoading = true;
+
+  String _searchQuery = '';
+  String _roleFilter = 'ALL';
+  String _sortBy = 'ovr-desc';
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -31,6 +36,41 @@ class _SquadBuilderScreenState extends State<SquadBuilderScreen> {
       _allPlayers = list;
       _isLoading = false;
     });
+  }
+
+  void reload() {
+    _loadPlayers();
+  }
+
+  List<PlayerModel> get _filteredPlayers {
+    var result = List<PlayerModel>.from(_allPlayers);
+
+    if (_searchQuery.trim().isNotEmpty) {
+      result = result
+          .where((p) => p.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+          .toList();
+    }
+
+    if (_roleFilter != 'ALL') {
+      result = result.where((p) => p.role.name == _roleFilter).toList();
+    }
+
+    result.sort((a, b) {
+      switch (_sortBy) {
+        case 'ovr-desc':
+          return b.ovrData.numeric.compareTo(a.ovrData.numeric);
+        case 'ovr-asc':
+          return a.ovrData.numeric.compareTo(b.ovrData.numeric);
+        case 'name-asc':
+          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+        case 'name-desc':
+          return b.name.toLowerCase().compareTo(a.name.toLowerCase());
+        default:
+          return 0;
+      }
+    });
+
+    return result;
   }
 
   void _generate() {
@@ -101,6 +141,8 @@ class _SquadBuilderScreenState extends State<SquadBuilderScreen> {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator(color: Color(0xFF10B981)));
     }
+
+    final displayList = _filteredPlayers;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -177,7 +219,7 @@ class _SquadBuilderScreenState extends State<SquadBuilderScreen> {
             ),
           ),
 
-          // Risultato Squadre se già generate
+          // Risultato Squadre Generate
           if (_generatedTeams != null) ...[
             const SizedBox(height: 20),
             Row(
@@ -187,17 +229,33 @@ class _SquadBuilderScreenState extends State<SquadBuilderScreen> {
                   'SQUADRE GENERATE',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Colors.white),
                 ),
-                ElevatedButton.icon(
-                  onPressed: _sendToScoreboard,
-                  icon: const Icon(Icons.sports_soccer, size: 16),
-                  label: const Text('Carica su Match'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B82F6),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
+                Row(
+                  children: [
+                    OutlinedButton(
+                      onPressed: () => setState(() => _generatedTeams = null),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFFEF4444)),
+                        foregroundColor: const Color(0xFFEF4444),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: const Text('Annulla'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      onPressed: _sendToScoreboard,
+                      icon: const Icon(Icons.sports_soccer, size: 16),
+                      label: const Text('Carica su Match'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3B82F6),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -206,7 +264,6 @@ class _SquadBuilderScreenState extends State<SquadBuilderScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Squadra 1
                 Expanded(
                   child: _buildTeamCard(
                     title: 'Squadra 1',
@@ -217,7 +274,6 @@ class _SquadBuilderScreenState extends State<SquadBuilderScreen> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                // Squadra 2
                 Expanded(
                   child: _buildTeamCard(
                     title: 'Squadra 2',
@@ -233,97 +289,167 @@ class _SquadBuilderScreenState extends State<SquadBuilderScreen> {
 
           const Divider(color: Color(0xFF1E293B), height: 32),
 
-          const Text(
-            'Tocca un atleta per convocarlo o escluderlo:',
-            style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-
-          // Lista selezionabili
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _allPlayers.length,
-            itemBuilder: (ctx, i) {
-              final p = _allPlayers[i];
-              final isSelected = _selectedIds.contains(p.id);
-              final ovr = p.ovrData;
-
-              return InkWell(
-                onTap: () {
-                  setState(() {
-                    if (isSelected) {
-                      _selectedIds.remove(p.id);
-                    } else {
-                      _selectedIds.add(p.id);
-                    }
-                  });
-                },
-                borderRadius: BorderRadius.circular(10),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 6),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFF10B981).withValues(alpha: 0.08) : const Color(0xFF111827),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: isSelected ? const Color(0xFF10B981) : const Color(0xFF334155),
-                      width: 1.5,
-                    ),
+          // Sezione Filtri e Ricerca
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (val) => setState(() => _searchQuery = val),
+                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                  decoration: InputDecoration(
+                    hintText: 'Cerca per nome...',
+                    hintStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                    prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B), size: 18),
+                    filled: true,
+                    fillColor: const Color(0xFF111827),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF334155))),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFF10B981))),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 22,
-                        height: 22,
+                ),
+              ),
+              const SizedBox(width: 8),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.sort, color: Color(0xFF94A3B8)),
+                color: const Color(0xFF1E293B),
+                onSelected: (val) => setState(() => _sortBy = val),
+                itemBuilder: (ctx) => const [
+                  PopupMenuItem(value: 'ovr-desc', child: Text('OVR Decrescente', style: TextStyle(color: Colors.white, fontSize: 13))),
+                  PopupMenuItem(value: 'ovr-asc', child: Text('OVR Crescente', style: TextStyle(color: Colors.white, fontSize: 13))),
+                  PopupMenuItem(value: 'name-asc', child: Text('Nome (A-Z)', style: TextStyle(color: Colors.white, fontSize: 13))),
+                  PopupMenuItem(value: 'name-desc', child: Text('Nome (Z-A)', style: TextStyle(color: Colors.white, fontSize: 13))),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildFilterChip('Tutti', 'ALL'),
+                _buildFilterChip('🧤 POR', 'POR'),
+                _buildFilterChip('🛡️ DIF', 'DIF'),
+                _buildFilterChip('⚙️ CEN', 'CEN'),
+                _buildFilterChip('⚡ ATT', 'ATT'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // Lista atleti filtrata
+          displayList.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Center(child: Text('Nessun atleta corrisponde ai filtri.', style: TextStyle(color: Color(0xFF94A3B8)))),
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: displayList.length,
+                  itemBuilder: (ctx, i) {
+                    final p = displayList[i];
+                    final isSelected = _selectedIds.contains(p.id);
+                    final ovr = p.ovrData;
+
+                    return InkWell(
+                      onTap: () {
+                        setState(() {
+                          if (isSelected) {
+                            _selectedIds.remove(p.id);
+                          } else {
+                            _selectedIds.add(p.id);
+                          }
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF10B981) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(6),
+                          color: isSelected ? const Color(0xFF10B981).withValues(alpha: 0.08) : const Color(0xFF111827),
+                          borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: isSelected ? const Color(0xFF10B981) : const Color(0xFF475569),
+                            color: isSelected ? const Color(0xFF10B981) : const Color(0xFF334155),
                             width: 1.5,
                           ),
                         ),
-                        child: isSelected
-                            ? const Icon(Icons.check, size: 16, color: Color(0xFF042F22))
-                            : null,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Text(
-                              p.name,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white),
+                            Container(
+                              width: 22,
+                              height: 22,
+                              decoration: BoxDecoration(
+                                color: isSelected ? const Color(0xFF10B981) : Colors.transparent,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: isSelected ? const Color(0xFF10B981) : const Color(0xFF475569),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: isSelected
+                                  ? const Icon(Icons.check, size: 16, color: Color(0xFF042F22))
+                                  : null,
                             ),
-                            Row(
-                              children: [
-                                Text(
-                                  p.role.name,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: p.roleColor,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    p.name,
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Grado ${ovr.letter} (${ovr.numeric})',
-                                  style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
-                                ),
-                              ],
+                                  Row(
+                                    children: [
+                                      Text(
+                                        p.role.name,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                          color: p.roleColor,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Grado ${ovr.letter} (${ovr.numeric})',
+                                        style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, String value) {
+    final isSelected = _roleFilter == value;
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: ChoiceChip(
+        label: Text(label),
+        selected: isSelected,
+        onSelected: (_) => setState(() => _roleFilter = value),
+        selectedColor: const Color(0xFF10B981),
+        backgroundColor: const Color(0xFF1E293B),
+        labelStyle: TextStyle(
+          color: isSelected ? const Color(0xFF042F22) : const Color(0xFF94A3B8),
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        side: BorderSide(color: isSelected ? const Color(0xFF10B981) : const Color(0xFF334155)),
       ),
     );
   }

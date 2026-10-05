@@ -781,7 +781,15 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           } else {
             _awayPenalties++;
           }
-          _logEvent('👟 Rigore Segnato: #${p.num} ${p.name}', 'Squadra: $teamName', min, team: team, isPenalty: true, type: 'RIGORE_SEGNATO', playerId: p.dbId);
+          _logEvent(
+            '👟 Rigore Segnato: #${p.num} ${p.name}',
+            'Squadra: $teamName',
+            min,
+            team: team,
+            isPenalty: true,
+            type: 'RIGORE_SEGNATO',
+            playerId: p.dbId,
+          );
         } else {
           if (team == 'home') {
             _homeScore++;
@@ -789,9 +797,18 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
             _awayScore++;
           }
           var sub = 'Squadra: $teamName';
-          if (assist != null && type == 'GOL') sub += ' • 🅰️️ Assist: $assist';
+          if (assist != null && type == 'GOL') sub += ' • 🅰 Assist: $assist';
           if (opposingGK != null) sub += ' • (Gol subito: #${opposingGK.num} ${opposingGK.name})';
-          _logEvent(type == 'GOL' ? '⚽ GOL! #${p.num} ${p.name}' : '👟 RIGORE! #${p.num} ${p.name}', sub, min, team: team, type: type, playerId: p.dbId, gkConcededId: opposingGK?.dbId);
+          _logEvent(
+            type == 'GOL' ? '⚽ GOL! #${p.num} ${p.name}' : '👟 RIGORE! #${p.num} ${p.name}',
+            sub,
+            min,
+            team: team,
+            isPenalty: false,
+            type: type,
+            playerId: p.dbId,
+            gkConcededId: opposingGK?.dbId,
+          );
         }
       } else if (type == 'AUTOGOL') {
         final oppKey = team == 'home' ? 'away' : 'home';
@@ -800,21 +817,85 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         } else {
           _awayScore++;
         }
-        _logEvent('⭕ AUTOGOL! #${p.num} ${p.name}', 'A favore avversario (Autore: $teamName)', min, team: oppKey, type: 'AUTOGOL', playerId: p.dbId);
+        _logEvent(
+          '⭕ AUTOGOL! #${p.num} ${p.name}',
+          'A favore avversario (Autore: $teamName)',
+          min,
+          team: oppKey,
+          isPenalty: isPen,
+          type: 'AUTOGOL',
+          playerId: p.dbId,
+        );
       } else if (type == 'GIALLO') {
-        _logEvent('🟨 Ammonizione: #${p.num} ${p.name}', 'Squadra: $teamName', min, team: team, type: 'GIALLO', playerId: p.dbId);
+        _logEvent(
+          '🟨 Ammonizione: #${p.num} ${p.name}',
+          'Squadra: $teamName',
+          min,
+          team: team,
+          isPenalty: isPen,
+          type: 'GIALLO',
+          playerId: p.dbId,
+        );
       } else if (type == 'ROSSO') {
-        _logEvent('🟥 Espulsione: #${p.num} ${p.name}', 'Squadra: $teamName', min, team: team, type: 'ROSSO', playerId: p.dbId);
+        _logEvent(
+          '🟥 Espulsione: #${p.num} ${p.name}',
+          'Squadra: $teamName',
+          min,
+          team: team,
+          isPenalty: isPen,
+          type: 'ROSSO',
+          playerId: p.dbId,
+        );
       } else if (type == 'RIGORE_PARATO') {
-        _logEvent('🧤 Rigore Parato da #${p.num} ${p.name}', 'Squadra: $teamName', min, team: team, type: 'RIGORE_PARATO', playerId: p.dbId);
+        _logEvent(
+          '🧤 Rigore Parato da #${p.num} ${p.name}',
+          'Squadra: $teamName',
+          min,
+          team: team,
+          isPenalty: isPen, // <-- ORA È TRUE QUANDO _currentPeriod == 5
+          type: 'RIGORE_PARATO',
+          playerId: p.dbId,
+        );
       } else if (type == 'RIGORE_SBAGLIATO') {
-        _logEvent('❌ Rigore Sbagliato da #${p.num} ${p.name}', 'Squadra: $teamName', min, team: team, type: 'RIGORE_SBAGLIATO', playerId: p.dbId);
+        _logEvent(
+          '❌ Rigore Sbagliato da #${p.num} ${p.name}',
+          'Squadra: $teamName',
+          min,
+          team: team,
+          isPenalty: isPen, // <-- ORA È TRUE QUANDO _currentPeriod == 5
+          type: 'RIGORE_SBAGLIATO',
+          playerId: p.dbId,
+        );
       } else if (type == 'FALLO') {
-        _logEvent('⚠️ Fallo di #${p.num} ${p.name}', 'Squadra: $teamName', min, team: team, type: 'FALLO', playerId: p.dbId);
+        _logEvent(
+          '⚠️ Fallo di #${p.num} ${p.name}',
+          'Squadra: $teamName',
+          min,
+          team: team,
+          isPenalty: isPen,
+          type: 'FALLO',
+          playerId: p.dbId,
+        );
       } else if (type == 'ERRORE') {
-        _logEvent('📉 Palla persa / Errore di #${p.num} ${p.name}', 'Squadra: $teamName', min, team: team, type: 'ERRORE', playerId: p.dbId);
+        _logEvent(
+          '📉 Palla persa / Errore di #${p.num} ${p.name}',
+          'Squadra: $teamName',
+          min,
+          team: team,
+          isPenalty: isPen,
+          type: 'ERRORE',
+          playerId: p.dbId,
+        );
       } else if (type == 'BIG_CHANCE_MISSED') {
-        _logEvent('🤦 Big Chance Missed da #${p.num} ${p.name}', 'Squadra: $teamName', min, team: team, type: 'BIG_CHANCE_MISSED', playerId: p.dbId);
+        _logEvent(
+          '🤦 Big Chance Missed da #${p.num} ${p.name}',
+          'Squadra: $teamName',
+          min,
+          team: team,
+          isPenalty: isPen,
+          type: 'BIG_CHANCE_MISSED',
+          playerId: p.dbId,
+        );
       }
     });
   }
@@ -1201,7 +1282,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           // Selettore Tempi
           Row(
             children: [
-              _periodBtn(1, '1°T', '1° Tempo'), _periodBtn(2, '2°T', '2° Tempo'), _periodBtn(3, '1°TS', '1° TS'), _periodBtn(4, '2°TS', '2° TS'), _periodBtn(5, 'RIG', 'Rigori'),
+              _periodBtn(1, '1°T', '1° Tempo'), _periodBtn(2, '2°T', '2° Tempo'), _periodBtn(3, '1°TS', '1° Tempo Supplementare'), _periodBtn(4, '2°TS', '2° Tempo Supplementare'), _periodBtn(5, 'RIG', 'Rigori'),
             ],
           ),
 

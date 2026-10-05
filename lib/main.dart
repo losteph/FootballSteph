@@ -47,7 +47,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   List<MatchRosterPlayer> _liveHomePlayers = [];
   List<MatchRosterPlayer> _liveAwayPlayers = [];
 
-  
+  final GlobalKey<SquadBuilderScreenState> _squadKey = GlobalKey<SquadBuilderScreenState>();
   final GlobalKey<HistoryScreenState> _historyKey = GlobalKey<HistoryScreenState>();
 
   void _handleSquadsToMatch(List<MatchRosterPlayer> home, List<MatchRosterPlayer> away) {
@@ -69,8 +69,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   Widget build(BuildContext context) {
     // I 4 schermi dell'applicazione (per ora segnaposto)
     final List<Widget> screens = [
-      const DatabaseScreen(),
-      SquadBuilderScreen(onSendToScoreboard: _handleSquadsToMatch),
+      DatabaseScreen(onDataChanged: () {_squadKey.currentState?.reload(); _historyKey.currentState?.reload();}),
+      SquadBuilderScreen(key: _squadKey, onSendToScoreboard: _handleSquadsToMatch),
       ScoreboardScreen(
         initialHomePlayers: _liveHomePlayers,
         initialAwayPlayers: _liveAwayPlayers,

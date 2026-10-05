@@ -43,14 +43,14 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
   }
 
   String _getTeamEmoji(int colorValue) {
-    if (colorValue == const Color(0xFF3B82F6).value) return '🔵';
-    if (colorValue == const Color(0xFFEF4444).value) return '🔴';
-    if (colorValue == const Color(0xFF10B981).value) return '🟢';
-    if (colorValue == const Color(0xFFEAB308).value) return '🟡';
-    if (colorValue == const Color(0xFFF97316).value) return '🟠';
-    if (colorValue == const Color(0xFF8B5CF6).value) return '🟣';
-    if (colorValue == const Color(0xFF1E293B).value) return '⚫';
-    if (colorValue == const Color(0xFFF8FAFC).value) return '⚪';
+    if (colorValue == const Color(0xFF3B82F6).toARGB32()) return '🔵';
+    if (colorValue == const Color(0xFFEF4444).toARGB32()) return '🔴';
+    if (colorValue == const Color(0xFF10B981).toARGB32()) return '🟢';
+    if (colorValue == const Color(0xFFEAB308).toARGB32()) return '🟡';
+    if (colorValue == const Color(0xFFF97316).toARGB32()) return '🟠';
+    if (colorValue == const Color(0xFF8B5CF6).toARGB32()) return '🟣';
+    if (colorValue == const Color(0xFF1E293B).toARGB32()) return '⚫';
+    if (colorValue == const Color(0xFFF8FAFC).toARGB32()) return '⚪';
     return '⚽';
   }
 
@@ -459,8 +459,9 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
     final isSV = r['score'] == 'S.V.';
 
     Color badgeColor;
-    if (isMvp) badgeColor = const Color(0xFF0044FF); // Blu MVP
-    else if (isSV) badgeColor = const Color(0xFF334155); // Grigio S.V.
+    if (isMvp) {
+      badgeColor = const Color(0xFF0044FF); // Blu MVP
+    } else if (isSV) badgeColor = const Color(0xFF334155); // Grigio S.V.
     else if (r['numScore'] >= 6.0) badgeColor = const Color(0xFF0A7227); // Verde
     else badgeColor = const Color(0xFFD50000); // Rosso
 
