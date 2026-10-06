@@ -230,6 +230,17 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
                 ),
               ),
               const SizedBox(width: 8),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.sort, color: Color(0xFF94A3B8)),
+                color: const Color(0xFF1E293B),
+                onSelected: (val) => setState(() => _sortBy = val),
+                itemBuilder: (ctx) => const [
+                  PopupMenuItem(value: 'ovr-desc', child: Text('OVR Decrescente', style: TextStyle(color: Colors.white, fontSize: 13))),
+                  PopupMenuItem(value: 'ovr-asc', child: Text('OVR Crescente', style: TextStyle(color: Colors.white, fontSize: 13))),
+                  PopupMenuItem(value: 'name-asc', child: Text('Nome (A-Z)', style: TextStyle(color: Colors.white, fontSize: 13))),
+                  PopupMenuItem(value: 'name-desc', child: Text('Nome (Z-A)', style: TextStyle(color: Colors.white, fontSize: 13))),
+                ],
+              ),
               IconButton(
                 onPressed: _showBackupDialog,
                 icon: const Icon(Icons.cloud_sync, color: Color(0xFF94A3B8)),

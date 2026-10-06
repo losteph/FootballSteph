@@ -27,9 +27,9 @@ class PlayerModel {
 
   // Mappa di conversione voti a punteggio numerico
   static const Map<String, int> gradeMap = {
-    'C-': 55, 'C': 62, 'C+': 68,
-    'B-': 74, 'B': 79, 'B+': 84,
-    'A-': 89, 'A': 93, 'A+': 98,
+    'C-': 55, 'C': 62, 'C+': 67,
+    'B-': 72, 'B': 77, 'B+': 82,
+    'A-': 87, 'A': 92, 'A+': 99,
   };
 
   // Statistiche per ruolo
@@ -66,28 +66,28 @@ class PlayerModel {
     String letter = 'C';
     CardTier tier = CardTier.bronze;
 
-    if (numeric >= 96) {
+    if (numeric >= 95) {
       letter = 'A+';
       tier = CardTier.gold;
-    } else if (numeric >= 92) {
+    } else if (numeric >= 90) {
       letter = 'A';
       tier = CardTier.gold;
-    } else if (numeric >= 88) {
+    } else if (numeric >= 85) {
       letter = 'A-';
       tier = CardTier.gold;
-    } else if (numeric >= 83) {
+    } else if (numeric >= 80) {
       letter = 'B+';
       tier = CardTier.silver;
-    } else if (numeric >= 78) {
+    } else if (numeric >= 75) {
       letter = 'B';
       tier = CardTier.silver;
-    } else if (numeric >= 73) {
+    } else if (numeric >= 70) {
       letter = 'B-';
       tier = CardTier.silver;
-    } else if (numeric >= 67) {
+    } else if (numeric >= 65) {
       letter = 'C+';
       tier = CardTier.bronze;
-    } else if (numeric >= 61) {
+    } else if (numeric >= 60) {
       letter = 'C';
       tier = CardTier.bronze;
     } else {
