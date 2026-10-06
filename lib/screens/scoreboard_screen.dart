@@ -531,7 +531,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
       final list = team == 'home' ? _homePlayers : _awayPlayers;
 
       for (final p in list) {
-        int goals = 0, assists = 0, fouls = 0, yellows = 0, reds = 0, penSaved = 0, penMissed = 0, ownGoals = 0, goalsConceded = 0, errors = 0, bigMisses = 0;
+        int goals = 0, assists = 0, fouls = 0, yellows = 0, reds = 0, penSaved = 0, penMissed = 0, ownGoals = 0, goalsConceded = 0, errors = 0, bigMisses = 0, bigCreated = 0, goodPlays = 0;
         for (final e in _events) {
           if (e.isPenalty) continue;
           if (e.playerId == p.dbId) {
@@ -544,12 +544,14 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
             if (e.type == 'RIGORE_SBAGLIATO') penMissed++;
             if (e.type == 'ERRORE') errors++;
             if (e.type == 'BIG_CHANCE_MISSED') bigMisses++;
+            if (e.type == 'BIG_CHANCE_CREATED') bigCreated++;
+            if (e.type == 'BUONA_GIOCATA') goodPlays++;
           }
           if (e.type == 'GOL' && e.sub.contains('Assist: #${p.num} ${p.name}')) assists++;
           if ((e.type == 'GOL' || e.type == 'RIGORE_SEGNATO' || e.type == 'AUTOGOL') && e.gkConcededId == p.dbId) goalsConceded++;
         }
 
-        final hasAction = (goals > 0 || assists > 0 || fouls > 0 || yellows > 0 || reds > 0 || penSaved > 0 || penMissed > 0 || ownGoals > 0 || goalsConceded > 0 || errors > 0 || bigMisses > 0);
+        final hasAction = (goals > 0 || assists > 0 || fouls > 0 || yellows > 0 || reds > 0 || penSaved > 0 || penMissed > 0 || ownGoals > 0 || goalsConceded > 0 || errors > 0 || bigMisses > 0 || bigCreated > 0 || goodPlays > 0);
         final playedEnough = p.playedSeconds >= 300;
 
         if (!hasAction && !playedEnough) {
@@ -570,11 +572,13 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         if (ownGoals > 0) { score -= (ownGoals * 1.0); details.add('-$ownGoals autogol'); }
         if (yellows > 0) { score -= (yellows * 1.0); details.add('-$yellows giallo'); }
         if (reds > 0) { score -= (reds * 2.0); details.add('-${reds * 2} rosso'); }
+        if (bigCreated > 0) { score += (bigCreated * 0.5); details.add('+${bigCreated * 0.5} big ch. creata'); }
+        if (goodPlays > 0) { score += (goodPlays * 0.1); details.add('+${(goodPlays * 0.1).toStringAsFixed(1)} giocata'); }
 
-        final foulMalus = (fouls ~/ 2) * 0.5;
+        final foulMalus = fouls * 0.2;
         if (foulMalus > 0) { score -= foulMalus; details.add('-$foulMalus ($fouls falli)'); }
 
-        final gkMalus = (goalsConceded ~/ 2) * 0.5;
+        final gkMalus = goalsConceded * 0.2;
         if (gkMalus > 0) { score -= gkMalus; details.add('-$gkMalus ($goalsConceded gol da POR)'); }
 
         if (p.gkPlayedSeconds >= 900 && goalsConceded == 0) {
@@ -582,7 +586,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           details.add('+1.0 clean sheet (≥15m)');
         }
 
-        final errMalus = (errors ~/ 2) * 0.5;
+        final errMalus = errors * 0.1;
         if (errMalus > 0) { score -= errMalus; details.add('-$errMalus ($errors errori)'); }
 
         if (bigMisses > 0) {
@@ -686,8 +690,10 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                     _actionBtn('👟 Rig. Seg.', () { _triggerAction(team, p, 'RIGORE_SEGNATO', opposingGK: opposingGK); Navigator.pop(ctx); }, textColor: const Color(0xFF10B981)),
                     _actionBtn('❌ Rig. Sbagl.', () { _triggerAction(team, p, 'RIGORE_SBAGLIATO'); Navigator.pop(ctx); }, textColor: const Color(0xFFEF4444)),
                     _actionBtn('🧤 Rig. Parato', () { _triggerAction(team, p, 'RIGORE_PARATO'); Navigator.pop(ctx); }, textColor: const Color(0xFF06B6D4)),
-                    _actionBtn('🤦 Big Chance Missed', () { _triggerAction(team, p, 'BIG_CHANCE_MISSED'); Navigator.pop(ctx); }, textColor: const Color(0xFF94A3B8)),
                     _actionBtn('⚠️️ Fallo', () { _triggerAction(team, p, 'FALLO'); Navigator.pop(ctx); }, textColor: const Color(0xFF94A3B8)),
+                    _actionBtn('🎯 Big Chance Creat.', () { _triggerAction(team, p, 'BIG_CHANCE_CREATED'); Navigator.pop(ctx); }, textColor: const Color(0xFF10B981)),
+                    _actionBtn('🤦 Big Chance Missed', () { _triggerAction(team, p, 'BIG_CHANCE_MISSED'); Navigator.pop(ctx); }, textColor: const Color(0xFF94A3B8)),
+                    _actionBtn('✨ Buona Giocata', () { _triggerAction(team, p, 'BUONA_GIOCATA'); Navigator.pop(ctx); }, textColor: const Color(0xFF10B981)),
                     _actionBtn('📉 Errore', () { _triggerAction(team, p, 'ERRORE'); Navigator.pop(ctx); }, textColor: const Color(0xFF94A3B8)),
                   ],
                 ),
@@ -894,6 +900,26 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           team: team,
           isPenalty: isPen,
           type: 'BIG_CHANCE_MISSED',
+          playerId: p.dbId,
+        );
+      } else if (type == 'BIG_CHANCE_CREATED') {
+        _logEvent(
+          '🎯 Big Chance Creata da #${p.num} ${p.name}',
+          'Squadra: $teamName',
+          min,
+          team: team,
+          isPenalty: isPen,
+          type: 'BIG_CHANCE_CREATED',
+          playerId: p.dbId,
+        );
+      } else if (type == 'BUONA_GIOCATA') {
+        _logEvent(
+          '✨ Buona Giocata di #${p.num} ${p.name}',
+          'Squadra: $teamName',
+          min,
+          team: team,
+          isPenalty: isPen,
+          type: 'BUONA_GIOCATA',
           playerId: p.dbId,
         );
       }

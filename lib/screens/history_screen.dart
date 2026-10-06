@@ -110,8 +110,11 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
 
   Map<String, dynamic> _calculateMatchRatings(MatchHistoryModel m) {
     final Map<String, List<Map<String, dynamic>>> res = {'home': [], 'away': []};
-    final hWon = m.homeScore > m.awayScore;
-    final aWon = m.awayScore > m.homeScore;
+    
+    final int homeTotal = m.homeScore + m.homePenalties;
+    final int awayTotal = m.awayScore + m.awayPenalties;
+    final hWon = homeTotal > awayTotal;
+    final aWon = awayTotal > homeTotal;
 
     double maxScore = 0.0;
     Map<String, dynamic>? currentMvp;
@@ -122,7 +125,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
       final list = team == 'home' ? m.homeRoster : m.awayRoster;
 
       for (final p in list) {
-        int goals = 0, assists = 0, fouls = 0, yellows = 0, reds = 0, penSaved = 0, penMissed = 0, ownGoals = 0, goalsConceded = 0, errors = 0, bigMisses = 0;
+        int goals = 0, assists = 0, fouls = 0, yellows = 0, reds = 0, penSaved = 0, penMissed = 0, ownGoals = 0, goalsConceded = 0, errors = 0, bigMisses = 0, bigCreated = 0, goodPlays = 0;
 
         for (final e in m.events) {
           if (e.isPenalty) continue;
@@ -136,12 +139,14 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
             if (e.type == 'RIGORE_SBAGLIATO') penMissed++;
             if (e.type == 'ERRORE') errors++;
             if (e.type == 'BIG_CHANCE_MISSED') bigMisses++;
+            if (e.type == 'BIG_CHANCE_CREATED') bigCreated++;
+            if (e.type == 'BUONA_GIOCATA') goodPlays++;
           }
           if (e.type == 'GOL' && e.sub.contains('Assist: #${p.num} ${p.name}')) assists++;
           if ((e.type == 'GOL' || e.type == 'RIGORE_SEGNATO' || e.type == 'AUTOGOL') && e.gkConcededId == p.dbId) goalsConceded++;
         }
 
-        final hasAction = (goals > 0 || assists > 0 || fouls > 0 || yellows > 0 || reds > 0 || penSaved > 0 || penMissed > 0 || ownGoals > 0 || goalsConceded > 0 || errors > 0 || bigMisses > 0);
+        final hasAction = (goals > 0 || assists > 0 || fouls > 0 || yellows > 0 || reds > 0 || penSaved > 0 || penMissed > 0 || ownGoals > 0 || goalsConceded > 0 || errors > 0 || bigMisses > 0 || bigCreated > 0 || goodPlays > 0);
         final playedEnough = p.playedSeconds >= 300;
 
         if (!hasAction && !playedEnough) {
@@ -162,16 +167,18 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         if (ownGoals > 0) { score -= (ownGoals * 1.0); details.add('-$ownGoals aut'); }
         if (yellows > 0) { score -= (yellows * 1.0); details.add('-$yellows gia'); }
         if (reds > 0) { score -= (reds * 2.0); details.add('-${reds * 2} ros'); }
+        if (bigCreated > 0) { score += (bigCreated * 0.5); details.add('+${bigCreated * 0.5} ch.cre'); }
+        if (goodPlays > 0) { score += (goodPlays * 0.1); details.add('+${(goodPlays * 0.1).toStringAsFixed(1)} gioc'); }
 
-        final foulMalus = (fouls ~/ 2) * 0.5;
+        final foulMalus = fouls * 0.2;
         if (foulMalus > 0) { score -= foulMalus; details.add('-$foulMalus falli'); }
 
-        final gkMalus = (goalsConceded ~/ 2) * 0.5;
+        final gkMalus = goalsConceded * 0.2;
         if (gkMalus > 0) { score -= gkMalus; details.add('-$gkMalus gol sub'); }
 
         if (p.gkPlayedSeconds >= 900 && goalsConceded == 0) { score += 1.0; details.add('+1.0 clean sheet'); }
 
-        final errMalus = (errors ~/ 2) * 0.5;
+        final errMalus = errors * 0.1;
         if (errMalus > 0) { score -= errMalus; details.add('-$errMalus err'); }
 
         if (bigMisses > 0) { score -= (bigMisses * 0.5); details.add('-${bigMisses * 0.5} gol div'); }
@@ -182,7 +189,11 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
           'id': p.dbId, 'num': p.num, 'name': p.name,
           'score': score.toStringAsFixed(1), 'numScore': score,
           'details': details.isNotEmpty ? details.join(', ') : 'Base 6.0',
-          'isWinner': teamWon, 'bonusCount': goals + assists + penSaved
+          'isWinner': teamWon, 'goals': goals,
+          'assists': assists,
+          'bigCreated': bigCreated,
+          'malusCount': fouls + errors + (yellows * 2) + (reds * 4),
+          'playedSeconds': p.playedSeconds,
         };
 
         res[team]!.add(pData);
@@ -193,19 +204,33 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         } else if (score == maxScore && currentMvp != null) {
           final bool pWinner = pData['isWinner'] as bool;
           final bool mvpWinner = currentMvp['isWinner'] as bool;
-          final int pBonus = pData['bonusCount'] as int;
-          final int mvpBonus = currentMvp['bonusCount'] as int;
 
           if (pWinner && !mvpWinner) {
-            currentMvp = pData;
+            currentMvp = pData; // 1. Ha vinto la partita (anche ai rigori)
           } else if (pWinner == mvpWinner) {
-            if (pBonus > mvpBonus) currentMvp = pData;
+            if ((pData['goals'] as int) > (currentMvp['goals'] as int)) {
+              currentMvp = pData; // 2. Più gol segnati
+            } else if ((pData['goals'] as int) == (currentMvp['goals'] as int)) {
+              if ((pData['assists'] as int) > (currentMvp['assists'] as int)) {
+                currentMvp = pData; // 3. Più assist
+              } else if ((pData['assists'] as int) == (currentMvp['assists'] as int)) {
+                if ((pData['bigCreated'] as int) > (currentMvp['bigCreated'] as int)) {
+                  currentMvp = pData; // 4. Più occasioni create
+                } else if ((pData['malusCount'] as int) < (currentMvp['malusCount'] as int)) {
+                  currentMvp = pData; // 5. Meno malus disciplinari/errori
+                } else if ((pData['playedSeconds'] as int) > (currentMvp['playedSeconds'] as int)) {
+                  currentMvp = pData; // 6. Più minutaggio in campo
+                }
+              }
+            }
           }
         }
       }
     }
 
-    if (currentMvp != null) currentMvp['isMvp'] = true;
+    if (currentMvp != null && maxScore > 6.0) {
+      currentMvp['isMvp'] = true;
+    }
     return res;
   }
 
