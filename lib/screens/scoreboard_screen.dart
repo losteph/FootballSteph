@@ -477,9 +477,22 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
             onPressed: () async {
               Navigator.pop(ctx);
               
-              final finalHomeRoster = _initialLineupHome ?? _homePlayers;
-              final finalAwayRoster = _initialLineupAway ?? _awayPlayers;
-              
+              // Uniamo la formazione iniziale (titolari/panchina) con i minuti reali giocati
+              final finalHomeRoster = (_initialLineupHome ?? _homePlayers).map((initP) {
+                final updatedP = _homePlayers.firstWhere((p) => p.dbId == initP.dbId, orElse: () => initP);
+                final copy = MatchRosterPlayer.fromJson(initP.toJson());
+                copy.playedSeconds = updatedP.playedSeconds;
+                copy.gkPlayedSeconds = updatedP.gkPlayedSeconds;
+                return copy;
+              }).toList();
+              final finalAwayRoster = (_initialLineupAway ?? _awayPlayers).map((initP) {
+                final updatedP = _awayPlayers.firstWhere((p) => p.dbId == initP.dbId, orElse: () => initP);
+                final copy = MatchRosterPlayer.fromJson(initP.toJson());
+                copy.playedSeconds = updatedP.playedSeconds;
+                copy.gkPlayedSeconds = updatedP.gkPlayedSeconds;
+                return copy;
+              }).toList();
+
               final now = DateTime.now();
               final dateStr = '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
