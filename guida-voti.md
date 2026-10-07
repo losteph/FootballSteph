@@ -169,3 +169,66 @@ Gradi previsti: **C-, C, C+, B-, B, B+, A-, A, A+**.
 ---
 
 Per ogni statistica è consigliata una valutazione a compartimenti stagni. Senza lasciarsi influenzare dalla bravura generale. I punti e virgola vanno intesi come OR da quanto ho capito. Mo è abbastanza AI slop, poi da correggere e rivedere tutti.
+
+---
+
+---
+
+# Appendice: Gestione dei Casi Limite e Regole di Bilanciamento
+
+Questa sezione serve a risolvere i dubbi quando un giocatore presenta due caratteristiche opposte all'interno della stessa statistica (ad esempio tanta forza ma zero fiato, oppure tanta potenza ma zero mira).
+
+> **Regola Aurea della Compensazione:**  
+> Quando due componenti della stessa statistica sono agli estremi opposti (uno da **A** e uno da **C**), il voto finale converge verso il centro (**B-**, **B** o **B+**) in base all'impatto effettivo che il giocatore ha durante l'ora di gioco.
+
+---
+
+### Giocatori di Movimento
+
+* **FIS (Forza vs Fiato/Resistenza)**
+  * *Mingherlino/leggero ma corre per due per 60 minuti:* **B / B+**. Soffre lo spalla a spalla diretto, ma il pressing continuo e i recuperi continui compensano ampiamente la mancanza di stazza.
+  * *Corazziere/palestrato da 90 kg ma senza fiato dopo 10 minuti:* **C+ / B-**. Può vincere un contrasto da fermo, ma se cammina con le mani sui fianchi non riesce nemmeno ad avvicinarsi all'azione e diventa un peso per la squadra.
+  * *Stazza imponente + polmoni inesauribili:* **A / A+** (dominante).
+
+* **VEL (Scatto breve vs Allungo in progressione)**
+  * *Lento sul primo metro ma velocissimo una volta lanciato in corsa:* 
+    * Nel 5v5/6v6 (spazi stretti): **C+ / B-** (non ha spazio per accelerare).
+    * Nel 7v7/8v8/11v11 (campo aperto): **B / B+** (può sfruttare la falcata).
+  * *Bruciante sui primi 2 metri ma scarso allungo sui 30 metri:* **B+** nei campi ridotti (5v5-7v7), dove l'esplosività nel breve crea superiorità immediata.
+
+* **TIR (Potenza pura vs Precisione/Mira)**
+  * *Tiro potentissimo ma mira casuale (spara alle stelle o buca la rete):* **B- / B**. La potenza grezza incute timore, ma senza inquadrare la porta con costanza non può salire in fascia A.
+  * *Tiro debole ma molto preciso e piazzato a fil di palo:* **B / B+**. Nel calcetto un tiro debole ma angolato batte il portiere più spesso di una bordata centrale.
+
+* **DIF (Senso della posizione vs Contrasto fisico/Tackle)**
+  * *Non sa fare un tackle ruvido ma legge in anticipo e intercetta ogni traiettoria:* **B / B+**. Il posizionamento pulito vale quanto (o più di) una scivolata.
+  * *Aggressivo e forte nel contrasto ma si perde sistematicamente l'uomo alle spalle:* **C+ / B-**. La foga senza lettura tattica crea buchi fatali in difesa.
+
+* **DRI (Agilità/Finte nello stretto vs Protezione palla col corpo)**
+  * *Non salta l'uomo con la finta ma usa il corpo per non perdere mai palla:* **B / B+**.
+  * *Tenta sempre il numero a effetto ma perde palla il 70% delle volte:* **C+ / B-**. Il dribbling conta se crea superiorità numerica, non se è fine a se stesso.
+
+* **PAS (Visione di gioco vs Precisione d'esecuzione)**
+  * *Vede linee di passaggio geniali ma calibra male la forza della palla:* **B- / B**.
+  * *Fa solo passaggi corti e scolastici a 2 metri senza mai sbagliare:* **B-**. Ordinato e affidabile, ma privo di verticalità.
+
+---
+
+### Portieri
+
+* **TUF (Spinta da terra vs Reattività a mezza altezza)**
+  * *Forte sui tiri a mezza altezza ma fa fatica ad andare a terra sulle palle rasoterra:* **B- / B**. Nei campi piccoli le rasoiate radenti sono le più pericolose.
+
+* **PRE (Bloccare il pallone vs Respingere via il pericolo)**
+  * *Non blocca mai la sfera ma devia sempre lateralmente o sopra la traversa:* **B / B+**. Anche se non trattiene, se azzera i tap-in avversari compie il proprio dovere.
+  * *Cerca a tutti i costi di bloccare e gli scivola la palla concedendo ribattute facili:* **C+ / B-**. L'errore di presa costa gol diretti.
+
+* **RIN (Rilancio con i piedi vs Rilancio teso con le mani)**
+  * *Piede debole o impreciso ma rilancio con le mani teso da centrocampo/contropiede:* **B / B+**. Nel 5v5/7v7 il rinvio con le mani è un'arma letale.
+
+* **RIF vs PIA (Reattività d'istinto vs Posizionamento)**
+  * *Riflessi felini sui tiri da un metro ma spesso fuori dai pali:* **B**. Compie parate miracolose, ma rischia di prendere gol banali da fuori per cattiva posizione.
+  * *Poco reattivo d'istinto ma sempre piazzato perfettamente:* **B / B+**. Riducendo l'angolo di tiro fa sembrare facili tiri che altrimenti sarebbero imprendibili.
+
+* **VEL (Uscita bassa coraggiosa vs Restare tra i pali)**
+  * *Esce a kamikaze su ogni palla anticipando l'attaccante:* **B / B+** se sceglie bene il tempo, **C+** se si fa saltare o beffare con pallonetti sistematici.
