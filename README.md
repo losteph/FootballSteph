@@ -43,3 +43,7 @@
 - **Persistenza Dati**: `shared_preferences` (archiviazione locale JSON)
 - **Gestione File**: `file_picker` per import/export multipiattaforma
 - **Piattaforme Supportate**: Web, Android, iOS
+
+---
+
+Per suggerimenti su come assegnare i voti ai giocatori/amici in maniera oggettiva per provare a rendere l'app quanto più equilibrata possibile e non farsi guidare dal sentimento ho provato a stilare questa [guida](guida-voti.md), sperando possa essere di aiuto e buona (ancora la devo testare). 
