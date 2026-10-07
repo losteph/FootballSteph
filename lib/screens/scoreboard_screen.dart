@@ -551,7 +551,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           if ((e.type == 'GOL' || e.type == 'RIGORE_SEGNATO' || e.type == 'AUTOGOL') && e.gkConcededId == p.dbId) goalsConceded++;
         }
 
-        final hasAction = (goals > 0 || assists > 0 || fouls > 0 || yellows > 0 || reds > 0 || penSaved > 0 || penMissed > 0 || ownGoals > 0 || goalsConceded > 0 || errors > 0 || bigMisses > 0 || bigCreated > 0 || goodPlays > 0);
+        final hasAction = (goals > 0 || assists > 0 || yellows > 0 || reds > 0 || penSaved > 0 || penMissed > 0 || ownGoals > 0 || goalsConceded > 0);
         final playedEnough = p.playedSeconds >= 300;
 
         if (!hasAction && !playedEnough) {
@@ -1007,7 +1007,6 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('#${r['num']} ${r['name']}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                Text(r['details'], style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 10)),
               ],
             ),
           ),
@@ -1036,7 +1035,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981), foregroundColor: const Color(0xFF042F22), minimumSize: const Size.fromHeight(44)),
               onPressed: () { Navigator.pop(ctx); _processShare(true); },
-              child: const Text('🌟 Solo Azioni Salienti\n(Gol, Rigori, Cartellini, Falli)', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              child: const Text('🌟 Solo Azioni Salienti\n(Gol, Rigori, Cartellini)', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 8),
             OutlinedButton(
@@ -1083,7 +1082,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
     
     text += onlyHighlights ? '\n📜 *AZIONI SALIENTI:*\n' : '\n📜 *CRONACA COMPLETA:*\n';
     
-    final salienti = ['GOL', 'RIGORE_SEGNATO', 'RIGORE_SBAGLIATO', 'RIGORE_PARATO', 'AUTOGOL', 'GIALLO', 'ROSSO', 'FALLO', 'SOSTITUZIONE'];
+    final salienti = ['GOL', 'RIGORE_SEGNATO', 'RIGORE_SBAGLIATO', 'RIGORE_PARATO', 'AUTOGOL', 'GIALLO', 'ROSSO', 'SOSTITUZIONE'];
     final filteredEvents = onlyHighlights ? _events.where((e) => salienti.contains(e.type)).toList() : _events.toList();
     
     if (filteredEvents.isEmpty) {

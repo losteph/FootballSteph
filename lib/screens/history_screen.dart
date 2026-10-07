@@ -146,7 +146,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
           if ((e.type == 'GOL' || e.type == 'RIGORE_SEGNATO' || e.type == 'AUTOGOL') && e.gkConcededId == p.dbId) goalsConceded++;
         }
 
-        final hasAction = (goals > 0 || assists > 0 || fouls > 0 || yellows > 0 || reds > 0 || penSaved > 0 || penMissed > 0 || ownGoals > 0 || goalsConceded > 0 || errors > 0 || bigMisses > 0 || bigCreated > 0 || goodPlays > 0);
+        final hasAction = (goals > 0 || assists > 0 || yellows > 0 || reds > 0 || penSaved > 0 || penMissed > 0 || ownGoals > 0 || goalsConceded > 0);
         final playedEnough = p.playedSeconds >= 300;
 
         if (!hasAction && !playedEnough) {
@@ -157,16 +157,16 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         double score = 6.0;
         final details = <String>[];
 
-        if (teamWon) { score += 0.5; details.add('+0.5 vit'); }
-        else if (teamLost) { score -= 0.5; details.add('-0.5 sco'); }
+        if (teamWon) { score += 0.2; details.add('+0.5 vit'); }
+        else if (teamLost) { score -= 0.2; details.add('-0.5 sco'); }
 
-        if (goals > 0) { score += (goals * 1.0); details.add('+$goals gol'); }
-        if (assists > 0) { score += (assists * 0.5); details.add('+${assists * 0.5} ass'); }
+        if (goals > 0) { score += (goals * 0.8); details.add('+$goals gol'); }
+        if (assists > 0) { score += (assists * 0.4); details.add('+${assists * 0.5} ass'); }
         if (penSaved > 0) { score += (penSaved * 1.5); details.add('+${penSaved * 1.5} rig.par'); }
         if (penMissed > 0) { score -= (penMissed * 1.5); details.add('-${penMissed * 1.5} rig.sbagl'); }
         if (ownGoals > 0) { score -= (ownGoals * 1.0); details.add('-$ownGoals aut'); }
-        if (yellows > 0) { score -= (yellows * 1.0); details.add('-$yellows gia'); }
-        if (reds > 0) { score -= (reds * 2.0); details.add('-${reds * 2} ros'); }
+        if (yellows > 0) { score -= (yellows * 0.6); details.add('-$yellows gia'); }
+        if (reds > 0) { score -= (reds * 1.5); details.add('-${reds * 2} ros'); }
         if (bigCreated > 0) { score += (bigCreated * 0.5); details.add('+${bigCreated * 0.5} ch.cre'); }
         if (goodPlays > 0) { score += (goodPlays * 0.1); details.add('+${(goodPlays * 0.1).toStringAsFixed(1)} gioc'); }
 
@@ -176,7 +176,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         final gkMalus = goalsConceded * 0.2;
         if (gkMalus > 0) { score -= gkMalus; details.add('-$gkMalus gol sub'); }
 
-        if (p.gkPlayedSeconds >= 900 && goalsConceded == 0) { score += 1.0; details.add('+1.0 clean sheet'); }
+        if (p.gkPlayedSeconds >= 900 && goalsConceded == 0) { score += 1.5; details.add('+1.0 clean sheet'); }
 
         final errMalus = errors * 0.1;
         if (errMalus > 0) { score -= errMalus; details.add('-$errMalus err'); }
@@ -298,7 +298,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
     final ratings = _calculateMatchRatings(m);
 
     // Filtro rigoroso: solo azioni salienti reali
-    const salienti = ['GOL', 'RIGORE_SEGNATO', 'RIGORE_SBAGLIATO', 'RIGORE_PARATO', 'AUTOGOL', 'GIALLO', 'ROSSO', 'FALLO', 'SOSTITUZIONE'];
+    const salienti = ['GOL', 'RIGORE_SEGNATO', 'RIGORE_SBAGLIATO', 'RIGORE_PARATO', 'AUTOGOL', 'GIALLO', 'ROSSO', 'SOSTITUZIONE'];
     final filteredEvents = m.events.where((e) => salienti.contains(e.type)).toList();
 
     showModalBottomSheet(
