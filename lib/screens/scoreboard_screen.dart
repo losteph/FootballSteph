@@ -5,6 +5,7 @@ import '../models/match_roster_player.dart';
 import '../models/match_event_model.dart';
 import '../models/match_history_model.dart';
 import '../services/storage_service.dart';
+import '../services/sound_service.dart';
 
 class ScoreboardScreen extends StatefulWidget {
   final List<MatchRosterPlayer> initialHomePlayers;
@@ -201,8 +202,13 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
   String _getElapsedFormatted() {
     if (_currentPeriod == 5) return 'RIGORI';
     if (_timerMode == 'countdown') {
-      final elapsed = _durationSeconds - _currentSeconds;
-      return '$_periodLabel ${_formatTime(elapsed < 0 ? 0 : elapsed)}';
+      if (_currentSeconds >= 0) {
+        final elapsed = _durationSeconds - _currentSeconds;
+        return '$_periodLabel ${_formatTime(elapsed < 0 ? 0 : elapsed)}';
+      } else {
+        final extraMinutes = ((-_currentSeconds) ~/ 60) + 1;
+        return '$_periodLabel ${_formatTime(_durationSeconds)} (+$extraMinutes\')';
+      }
     } else {
       return '$_periodLabel ${_formatTime(_currentSeconds)}';
     }
@@ -266,12 +272,14 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
             if (_currentSeconds > 0) {
               _currentSeconds--;
             } else {
+              SoundService.playWhistle();
               _finishTimer();
             }
           } else {
             if (_currentSeconds < _durationSeconds) {
               _currentSeconds++;
             } else {
+              SoundService.playWhistle();
               _finishTimer();
             }
           }
@@ -301,6 +309,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           } else {
             _gkTimer?.cancel();
             _isGkRunning = false;
+            SoundService.playBell();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('🔔 CAMBIO PORTIERE! Turno terminato.'),
