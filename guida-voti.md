@@ -165,3 +165,7 @@ Gradi previsti: **C-, C, C+, B-, B, B+, A-, A, A+**.
 * **A-**: Sempre posizionato nel punto giusto; fa sembrare facili tiri pericolosi semplicemente perché è già lì.
 * **A**: Guida la difesa e legge la traiettoria in anticipo; neutralizza le conclusioni riducendo al minimo l'angolo di visuale.
 * **A+**: Padronanza assoluta degli spazi; non sbaglia mai un centimetro, comanda l'area con autorità indiscussa.
+
+---
+
+Per ogni statistica è consigliata una valutazione a compartimenti stagni. Senza lasciarsi influenzare dalla bravura generale. I punti e virgola vanno intesi come OR da quanto ho capito. Mo è abbastanza AI slop, poi da correggere e rivedere tutti.
