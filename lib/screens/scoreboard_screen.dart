@@ -562,16 +562,16 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         double score = 6.0;
         final details = <String>[];
 
-        if (teamWon) { score += 0.5; details.add('+0.5 vittoria'); } 
-        else if (teamLost) { score -= 0.5; details.add('-0.5 sconfitta'); }
+        if (teamWon) { score += 0.2; details.add('+0.2 vittoria'); } 
+        else if (teamLost) { score -= 0.2; details.add('-0.2 sconfitta'); }
 
-        if (goals > 0) { score += (goals * 1.0); details.add('+$goals gol'); }
-        if (assists > 0) { score += (assists * 0.5); details.add('+${assists * 0.5} assist'); }
+        if (goals > 0) { score += (goals * 0.8); details.add('+$goals gol'); }
+        if (assists > 0) { score += (assists * 0.4); details.add('+${assists * 0.4} assist'); }
         if (penSaved > 0) { score += (penSaved * 1.5); details.add('+${penSaved * 1.5} rig. parato'); }
         if (penMissed > 0) { score -= (penMissed * 1.5); details.add('-${penMissed * 1.5} rig. sbagliato'); }
         if (ownGoals > 0) { score -= (ownGoals * 1.0); details.add('-$ownGoals autogol'); }
-        if (yellows > 0) { score -= (yellows * 1.0); details.add('-$yellows giallo'); }
-        if (reds > 0) { score -= (reds * 2.0); details.add('-${reds * 2} rosso'); }
+        if (yellows > 0) { score -= (yellows * 0.6); details.add('-$yellows giallo'); }
+        if (reds > 0) { score -= (reds * 1.5); details.add('-${reds * 2} rosso'); }
         if (bigCreated > 0) { score += (bigCreated * 0.5); details.add('+${bigCreated * 0.5} big ch. creata'); }
         if (goodPlays > 0) { score += (goodPlays * 0.1); details.add('+${(goodPlays * 0.1).toStringAsFixed(1)} giocata'); }
 
@@ -582,8 +582,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         if (gkMalus > 0) { score -= gkMalus; details.add('-$gkMalus ($goalsConceded gol da POR)'); }
 
         if (p.gkPlayedSeconds >= 900 && goalsConceded == 0) {
-          score += 1.0;
-          details.add('+1.0 clean sheet (≥15m)');
+          score += 1.5;
+          details.add('+1.5 clean sheet (≥15m)');
         }
 
         final errMalus = errors * 0.1;
