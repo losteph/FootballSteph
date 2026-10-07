@@ -204,6 +204,11 @@ Questa sezione serve a risolvere i dubbi quando un giocatore presenta due caratt
   * *Non sa fare un tackle ruvido ma legge in anticipo e intercetta ogni traiettoria:* **B / B+**. Il posizionamento pulito vale quanto (o più di) una scivolata.
   * *Aggressivo e forte nel contrasto ma si perde sistematicamente l'uomo alle spalle:* **C+ / B-**. La foga senza lettura tattica crea buchi fatali in difesa.
 
+* **DIF per gli Attaccanti (Pressing offensivo vs Rientro effettivo)**
+  * *Fa la capanna in avanti:* Non corre, non pressa e non rientra mai: **C- / C**. La squadra gioca con un uomo in meno quando difende.
+  * *Pressing alto efficace:* Non torna indietro nella propria metà campo, ma aggredisce subito i portatori palla avversari, sporca i rinvii e intercetta linee di passaggio in attacco: **B- / B**.
+  * *Attaccante generoso:* Fa pressing continuo in avanti e ripiega a raddoppiare a centrocampo quando la squadra è sotto pressione: **B+ / A-**.
+
 * **DRI (Agilità/Finte nello stretto vs Protezione palla col corpo)**
   * *Non salta l'uomo con la finta ma usa il corpo per non perdere mai palla:* **B / B+**.
   * *Tenta sempre il numero a effetto ma perde palla il 70% delle volte:* **C+ / B-**. Il dribbling conta se crea superiorità numerica, non se è fine a se stesso.
