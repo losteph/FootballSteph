@@ -202,23 +202,7 @@ Non bisogna cercare la valutazione matematicamente perfetta: l'obiettivo è che 
 * **Il portiere improvvisato (giocatore di movimento in porta):**
   * Parte tipicamente con **C/C+** in TUF e PIA per mancanza di tecnica tra i pali, ma può arrivare a **B/B+** in RIN (se calcia bene) o RIF (se è reattivo di suo).
 
- ---
-
-## 👥 RIFERIMENTO COMUNE DEL GRUPPO
-
-Per mantenere le valutazioni coerenti, è utile avere alcuni giocatori conosciuti come riferimento.
-
-Ad esempio:
-
-* giocatore normale → **B**
-* leggermente sopra → **B+**
-* chiaramente sopra → **A- / A**
-* leggermente sotto → **B-**
-* chiaramente sotto → **C- / C / C+**
-
-I nuovi giocatori vengono confrontati con questi riferimenti.
-
-**Non serve che tutti conoscano perfettamente ogni giocatore:** serve che il gruppo utilizzi la stessa scala.
+serve che tutti conoscano perfettamente ogni giocatore:** serve che il gruppo utilizzi la stessa scala.
 
 ---
 
@@ -237,7 +221,7 @@ La guida va riletta soprattutto quando arriva un nuovo giocatore o nasce un dubb
 
 ---
 
-## ⭐ REGOLA FINALE
+## ⭐ REGOLA FINALE 
 
 > **Valutare il livello abituale, confrontarlo con il gruppo generale con massima coerenza.**
 
