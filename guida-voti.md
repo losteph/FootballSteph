@@ -196,13 +196,8 @@ Non bisogna cercare la valutazione matematicamente perfetta: l'obiettivo è che 
 * **Bloccare vs Respingere (PRE):**
   * *Non blocca mai ma devia sempre in sicurezza all'esterno:* **B / B+** (efficace comunque).
   * *Cerca di bloccare a tutti i costi e concede tap-in:* **C+ / B-** (errore grave).
-* **Riflessi vs Piazzamento (RIF / PIA):**
-  * *Miracoloso da un metro ma sempre fuori posizione:* **B**.
-  * *Poco reattivo d'istinto ma sempre piazzato benissimo:* **B / B+** (il piazzamento previene il miracolo).
 * **Il portiere improvvisato (giocatore di movimento in porta):**
   * Parte tipicamente con **C/C+** in TUF e PIA per mancanza di tecnica tra i pali, ma può arrivare a **B/B+** in RIN (se calcia bene) o RIF (se è reattivo di suo).
-
-serve che tutti conoscano perfettamente ogni giocatore:** serve che il gruppo utilizzi la stessa scala.
 
 ---
 
