@@ -28,8 +28,7 @@ Non bisogna cercare la valutazione matematicamente perfetta: l'obiettivo è che 
 > ### 🧠 3 Regole d'Oro per una Valutazione
 > 1. **La Fascia B è la Normalità:** In una partitella amatoriale, il 60-70% dei voti deve cadere tra **B-**, **B** e **B+**. La fascia **A** è riservata a chi fa la differenza nei campionati agonistici o ha qualità dominanti. La fascia **C** è per chi è alle prime armi, fuori forma o privo di basi.
 > 2. **Valuta a Compartimenti Stagni:** Ogni statistica vive da sola. Un atleta può avere **C- in TIR** e contemporaneamente **A in VEL** o **FIS**. Non lasciarti influenzare dalla simpatia o dal giudizio complessivo.
-> 3. **Uso del punto e virgola (;):** All'interno delle descrizioni, i punti e virgola separano scenari alternativi ("oppure"). Se il giocatore rispetta anche solo una delle condizioni descritte, appartiene a quella fascia.
-> Se sei indeciso tra due valori, scegli quello **più vicino a B**.
+> 3. **Uso del punto e virgola (;):** All'interno delle descrizioni, i punti e virgola separano scenari alternativi ("oppure"). Se il giocatore rispetta anche solo una delle condizioni descritte, appartiene a quella fascia. Se sei indeciso tra due valori, scegli quello **più vicino a B**.
 ---
 
 # PARTE 1: GIOCATORI DI MOVIMENTO ⚽
