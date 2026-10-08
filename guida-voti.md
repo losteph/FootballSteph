@@ -211,8 +211,11 @@ serve che tutti conoscano perfettamente ogni giocatore:** serve che il gruppo ut
 Per ogni giocatore:
 
 **1. Guarda la caratteristica.**
+
 **2. Confrontala con il gruppo.**
+
 **3. Scegli rapidamente il valore.**
+
 **4. Passa alla statistica successiva.**
 
 Tempo consigliato: **circa 1–2 minuti per giocatore**.
