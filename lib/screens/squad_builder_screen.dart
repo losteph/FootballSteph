@@ -15,8 +15,8 @@ class SquadBuilderScreen extends StatefulWidget {
 
 class SquadBuilderScreenState extends State<SquadBuilderScreen> {
   List<PlayerModel> _allPlayers = [];
-  final Set<String> _selectedIds = {};
-  MatchTeams? _generatedTeams;
+  MatchTeams _generatedTeams = MatchTeams(team1: [], team2: []);
+  int _targetTeam = 1; // 1 = Squadra 1 (Casa), 2 = Squadra 2 (Ospiti)
   bool _isLoading = true;
 
   String _searchQuery = '';
@@ -73,39 +73,71 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
     return result;
   }
 
-  void _generate() {
-    final selected = _allPlayers.where((p) => _selectedIds.contains(p.id)).toList();
-    if (selected.length < 2) {
+  int get _totalSelectedCount => _generatedTeams.team1.length + _generatedTeams.team2.length;
+
+  void _onPlayerTapped(PlayerModel p) {
+    setState(() {
+      final inT1 = _generatedTeams.team1.any((x) => x.id == p.id);
+      final inT2 = _generatedTeams.team2.any((x) => x.id == p.id);
+
+      if (inT1) {
+        _generatedTeams.team1.removeWhere((x) => x.id == p.id);
+      } else if (inT2) {
+        _generatedTeams.team2.removeWhere((x) => x.id == p.id);
+      } else {
+        if (_targetTeam == 1) {
+          _generatedTeams.team1.add(p);
+        } else {
+          _generatedTeams.team2.add(p);
+        }
+      }
+    });
+  }
+
+  void _generateAutomatic() {
+    final allAssigned = [..._generatedTeams.team1, ..._generatedTeams.team2];
+    if (allAssigned.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Seleziona almeno 2 giocatori per generare le squadre.')),
+        const SnackBar(content: Text('Seleziona almeno 2 giocatori da bilanciare.')),
       );
       return;
     }
 
     setState(() {
-      _generatedTeams = TeamBalancer.balanceTeams(selected);
+      _generatedTeams = TeamBalancer.balanceTeams(allAssigned);
+    });
+  }
+
+  void _clearTeams() {
+    setState(() {
+      _generatedTeams = MatchTeams(team1: [], team2: []);
     });
   }
 
   void _swapPlayer(PlayerModel player, int fromTeam) {
-    if (_generatedTeams == null) return;
     setState(() {
       if (fromTeam == 1) {
-        _generatedTeams!.team1.removeWhere((p) => p.id == player.id);
-        _generatedTeams!.team2.add(player);
+        _generatedTeams.team1.removeWhere((p) => p.id == player.id);
+        _generatedTeams.team2.add(player);
       } else {
-        _generatedTeams!.team2.removeWhere((p) => p.id == player.id);
-        _generatedTeams!.team1.add(player);
+        _generatedTeams.team2.removeWhere((p) => p.id == player.id);
+        _generatedTeams.team1.add(player);
       }
     });
   }
 
   void _sendToScoreboard() {
-    if (_generatedTeams == null || widget.onSendToScoreboard == null) return;
+    if (widget.onSendToScoreboard == null) return;
+    if (_generatedTeams.team1.isEmpty && _generatedTeams.team2.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Inserisci almeno un giocatore per squadra.')),
+      );
+      return;
+    }
 
     final homeRoster = <MatchRosterPlayer>[];
-    for (var i = 0; i < _generatedTeams!.team1.length; i++) {
-      final p = _generatedTeams!.team1[i];
+    for (var i = 0; i < _generatedTeams.team1.length; i++) {
+      final p = _generatedTeams.team1[i];
       homeRoster.add(MatchRosterPlayer(
         dbId: p.id,
         num: '${i + 1}',
@@ -116,8 +148,8 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
     }
 
     final awayRoster = <MatchRosterPlayer>[];
-    for (var i = 0; i < _generatedTeams!.team2.length; i++) {
-      final p = _generatedTeams!.team2[i];
+    for (var i = 0; i < _generatedTeams.team2.length; i++) {
+      final p = _generatedTeams.team2[i];
       awayRoster.add(MatchRosterPlayer(
         dbId: p.id,
         num: '${i + 1}',
@@ -168,11 +200,11 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
                       text: TextSpan(
                         children: [
                           const TextSpan(
-                            text: 'Convocati: ',
+                            text: 'Convocati totali: ',
                             style: TextStyle(color: Color(0xFF94A3B8), fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                           TextSpan(
-                            text: '${_selectedIds.length}',
+                            text: '$_totalSelectedCount',
                             style: const TextStyle(
                               color: Color(0xFF10B981),
                               fontSize: 16,
@@ -184,12 +216,12 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
                     ),
                   ],
                 ),
-                if (_selectedIds.isNotEmpty)
+                if (_totalSelectedCount > 0)
                   TextButton.icon(
-                    onPressed: () => setState(() => _selectedIds.clear()),
+                    onPressed: _clearTeams,
                     icon: const Icon(Icons.clear_all, size: 16, color: Color(0xFFEF4444)),
                     label: const Text(
-                      'Azzera',
+                      'Svuota',
                       style: TextStyle(color: Color(0xFFEF4444), fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                     style: TextButton.styleFrom(
@@ -203,13 +235,13 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
           ),
           const SizedBox(height: 12),
 
-          // Tasto Genera Squadre
+          // Tasto Bilancia Automaticamente
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: _generate,
+              onPressed: _generateAutomatic,
               icon: const Icon(Icons.flash_on, color: Color(0xFF042F22)),
-              label: const Text('GENERA SQUADRE BILANCIATE', style: TextStyle(fontWeight: FontWeight.w900)),
+              label: const Text('BILANCIA AUTOMATICAMENTE', style: TextStyle(fontWeight: FontWeight.w900)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF10B981),
                 foregroundColor: const Color(0xFF042F22),
@@ -219,73 +251,64 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
             ),
           ),
 
-          // Risultato Squadre Generate
-          if (_generatedTeams != null) ...[
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'SQUADRE GENERATE',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Colors.white),
-                ),
-                Row(
-                  children: [
-                    OutlinedButton(
-                      onPressed: () => setState(() => _generatedTeams = null),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFFEF4444)),
-                        foregroundColor: const Color(0xFFEF4444),
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                        textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      child: const Text('Annulla'),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton.icon(
-                      onPressed: _sendToScoreboard,
-                      icon: const Icon(Icons.sports_soccer, size: 16),
-                      label: const Text('Carica su Match'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                        textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
+          const SizedBox(height: 16),
 
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
+          // Intestazione con pulsante Carica
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'SCHIERAMENTO SQUADRE',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white),
+              ),
+              if (_totalSelectedCount > 0)
+                ElevatedButton.icon(
+                  onPressed: _sendToScoreboard,
+                  icon: const Icon(Icons.sports_soccer, size: 16),
+                  label: const Text('Carica su Match'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3B82F6),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // I Due Box Squadra (Toccabili invisibilmente per impostare la destinazione)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _targetTeam = 1),
                   child: _buildTeamCard(
                     title: 'Squadra 1',
-                    team: _generatedTeams!.team1,
-                    avgOvr: _generatedTeams!.avgOvr1,
+                    team: _generatedTeams.team1,
+                    avgOvr: _generatedTeams.avgOvr1,
                     teamColor: const Color(0xFF3B82F6),
                     fromTeamIdx: 1,
                   ),
                 ),
-                const SizedBox(width: 10),
-                Expanded(
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _targetTeam = 2),
                   child: _buildTeamCard(
                     title: 'Squadra 2',
-                    team: _generatedTeams!.team2,
-                    avgOvr: _generatedTeams!.avgOvr2,
+                    team: _generatedTeams.team2,
+                    avgOvr: _generatedTeams.avgOvr2,
                     teamColor: const Color(0xFFEF4444),
                     fromTeamIdx: 2,
                   ),
                 ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
 
           const Divider(color: Color(0xFF1E293B), height: 32),
 
@@ -339,7 +362,7 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
           ),
           const SizedBox(height: 10),
 
-          // Lista atleti filtrata
+          // Lista atleti selezionabili
           displayList.isEmpty
               ? const Padding(
                   padding: EdgeInsets.symmetric(vertical: 20),
@@ -351,19 +374,13 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
                   itemCount: displayList.length,
                   itemBuilder: (ctx, i) {
                     final p = displayList[i];
-                    final isSelected = _selectedIds.contains(p.id);
+                    final inTeam1 = _generatedTeams.team1.any((x) => x.id == p.id);
+                    final inTeam2 = _generatedTeams.team2.any((x) => x.id == p.id);
+                    final isSelected = inTeam1 || inTeam2;
                     final ovr = p.ovrData;
 
                     return InkWell(
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            _selectedIds.remove(p.id);
-                          } else {
-                            _selectedIds.add(p.id);
-                          }
-                        });
-                      },
+                      onTap: () => _onPlayerTapped(p),
                       borderRadius: BorderRadius.circular(10),
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 6),
@@ -476,42 +493,53 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: teamColor),
           ),
           Text(
-            'OVR Medio: ${avgOvr.toStringAsFixed(1)}',
+            'OVR Medio: ${avgOvr.isNaN || avgOvr == 0 ? '--.-' : avgOvr.toStringAsFixed(1)} (${team.length})',
             style: const TextStyle(fontSize: 10, color: Color(0xFF94A3B8), fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          ...team.map((p) => Container(
-                margin: const EdgeInsets.only(bottom: 4),
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
-                  borderRadius: BorderRadius.circular(6),
+          if (team.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(
+                child: Text(
+                  'Nessun giocatore',
+                  style: TextStyle(color: Color(0xFF64748B), fontSize: 11, fontStyle: FontStyle.italic),
                 ),
-                child: Row(
-                  children: [
-                    Text(
-                      p.role.name,
-                      style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: p.roleColor),
-                    ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: Text(
-                        p.name,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+              ),
+            )
+          else
+            ...team.map((p) => Container(
+                  margin: const EdgeInsets.only(bottom: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        p.role.name,
+                        style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: p.roleColor),
                       ),
-                    ),
-                    InkWell(
-                      onTap: () => _swapPlayer(p, fromTeamIdx),
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 2),
-                        child: Icon(Icons.swap_horiz, size: 16, color: Color(0xFF10B981)),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          p.name,
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )),
+                      InkWell(
+                        onTap: () => _swapPlayer(p, fromTeamIdx),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 2),
+                          child: Icon(Icons.swap_horiz, size: 16, color: Color(0xFF10B981)),
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
         ],
       ),
     );
