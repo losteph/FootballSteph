@@ -348,8 +348,14 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
 
   MatchRosterPlayer? _getCurrentGK(String team) {
     final list = team == 'home' ? _homePlayers : _awayPlayers;
-    return list.firstWhere((p) => p.isGK && p.inField,
-        orElse: () => list.firstWhere((p) => p.isGK, orElse: () => list.first));
+    final inFieldGK = list.where((p) => p.isGK && p.inField);
+    if (inFieldGK.isNotEmpty) return inFieldGK.first;
+    
+    final anyGK = list.where((p) => p.isGK);
+    if (anyGK.isNotEmpty) return anyGK.first;
+
+    // Se nessuno ha il ruolo portiere attivo, ritorna null (zero malus a chicchessia)
+    return null;
   }
 
   void _quickGoal(String team) {
@@ -534,12 +540,26 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
 
   void _setGoalkeeper(String team, int idx) {
     final list = team == 'home' ? _homePlayers : _awayPlayers;
-    setState(() {
-      for (var i = 0; i < list.length; i++) { list[i].isGK = (i == idx); }
-    });
     final p = list[idx];
+    final wasAlreadyGK = p.isGK;
     final name = team == 'home' ? _homeNameCtrl.text : _awayNameCtrl.text;
-    _logEvent('🧤 Cambio Portiere', 'Va in porta #${p.num} ${p.name} ($name)', _getElapsedFormatted(), team: team);
+
+    setState(() {
+      for (var i = 0; i < list.length; i++) {
+        if (wasAlreadyGK) {
+          // Se clicchi su chi era già portiere, lo togli (diventa giocatore di movimento)
+          list[i].isGK = false;
+        } else {
+          // Altrimenti assegni la porta solo a lui
+          list[i].isGK = (i == idx);
+        }
+      }
+    });
+
+    // Registra l'evento in cronaca solo se qualcuno va in porta
+    if (!wasAlreadyGK) {
+      _logEvent('🧤 Cambio Portiere', 'Va in porta #${p.num} ${p.name} ($name)', _getElapsedFormatted(), team: team);
+    }
   }
 
   Map<String, List<Map<String, dynamic>>> _calculateRatings() {

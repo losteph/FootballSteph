@@ -119,6 +119,8 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
     double maxScore = 0.0;
     Map<String, dynamic>? currentMvp;
 
+    bool isDrawMvp = false;
+
     for (final team in ['home', 'away']) {
       final teamWon = team == 'home' ? hWon : aWon;
       final teamLost = team == 'home' ? aWon : hWon;
@@ -201,25 +203,35 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         if (score > maxScore) {
           maxScore = score;
           currentMvp = pData;
+          isDrawMvp = false;
         } else if (score == maxScore && currentMvp != null) {
           final bool pWinner = pData['isWinner'] as bool;
           final bool mvpWinner = currentMvp['isWinner'] as bool;
 
           if (pWinner && !mvpWinner) {
-            currentMvp = pData; // 1. Ha vinto la partita (anche ai rigori)
+            currentMvp = pData;
+            isDrawMvp = false; // 1. Ha vinto la partita (anche ai rigori)
           } else if (pWinner == mvpWinner) {
             if ((pData['goals'] as int) > (currentMvp['goals'] as int)) {
-              currentMvp = pData; // 2. Più gol segnati
+              currentMvp = pData;
+              isDrawMvp = false; // 2. Più gol segnati
             } else if ((pData['goals'] as int) == (currentMvp['goals'] as int)) {
               if ((pData['assists'] as int) > (currentMvp['assists'] as int)) {
-                currentMvp = pData; // 3. Più assist
+                currentMvp = pData;
+                isDrawMvp = false; // 3. Più assist
               } else if ((pData['assists'] as int) == (currentMvp['assists'] as int)) {
                 if ((pData['bigCreated'] as int) > (currentMvp['bigCreated'] as int)) {
-                  currentMvp = pData; // 4. Più occasioni create
+                  currentMvp = pData;
+                  isDrawMvp = false; // 4. Più occasioni create
                 } else if ((pData['malusCount'] as int) < (currentMvp['malusCount'] as int)) {
-                  currentMvp = pData; // 5. Meno malus disciplinari/errori
+                  currentMvp = pData;
+                  isDrawMvp = false; // 5. Meno malus disciplinari/errori
                 } else if ((pData['playedSeconds'] as int) > (currentMvp['playedSeconds'] as int)) {
-                  currentMvp = pData; // 6. Più minutaggio in campo
+                  currentMvp = pData;
+                  isDrawMvp = false; // 6. Più minutaggio in campo
+                } else {
+                  // Parità identica su tutti i 6 fattori
+                  isDrawMvp = true;
                 }
               }
             }
@@ -228,7 +240,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
       }
     }
 
-    if (currentMvp != null && maxScore > 6.0) {
+    if (currentMvp != null && !isDrawMvp) {
       currentMvp['isMvp'] = true;
     }
     return res;
