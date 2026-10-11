@@ -181,21 +181,21 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
     var buffer = StringBuffer();
     buffer.writeln('⚽ *FORMAZIONI DELLA PARTITA*\n');
 
-    buffer.writeln('🔵 *SQUADRA 1* (OVR Medio: $avg1) [${t1.length} giocatori]');
+    buffer.writeln('🔵 *SQUADRA 1* (OVR Medio: $avg1)');
     if (t1.isEmpty) {
       buffer.writeln('• Nessun convocato');
     } else {
       for (var p in t1) {
-        buffer.writeln('• ${p.role.name} ${p.name}');
+        buffer.writeln('• [${p.role.name}] ${p.name}');
       }
     }
 
-    buffer.writeln('\n🔴 *SQUADRA 2* (OVR Medio: $avg2) [${t2.length} giocatori]');
+    buffer.writeln('\n🔴 *SQUADRA 2* (OVR Medio: $avg2)');
     if (t2.isEmpty) {
       buffer.writeln('• Nessun convocato');
     } else {
       for (var p in t2) {
-        buffer.writeln('• ${p.role.name} ${p.name}');
+        buffer.writeln('• [${p.role.name}] ${p.name}');
       }
     }
 
