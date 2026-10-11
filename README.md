@@ -26,7 +26,8 @@
 ### 📊 Storico, Pagelle & Marcatori
 - **Pagelline Automatiche**: Algoritmo che calcola il voto finale (scala 1.0 - 10.0) combinando risultato di squadra, minutaggio, gol, assist e malus disciplinari/difensivi.
 - **Design a Colori**: 
-  - 🟢 Verde per voti $\ge 6.0$
+  - 🟢 Verde per voti $\ge 6.7$
+  - 🟠 Arancio / Ambra per la Sufficienza normale (6.0 - 6.6)
   - 🔴 Rosso per voti $< 6.0$
   - 🔵 Blu Elettrico con badge dedicato per l'**MVP**
   - ⚫ Grigio per i Senza Voto (`S.V.`)

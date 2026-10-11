@@ -554,12 +554,20 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
     final isMvp = r['isMvp'] == true;
     final isSV = r['score'] == 'S.V.';
 
+    final double scoreVal = double.tryParse(r['score']?.toString() ?? '') ?? 0.0;
+
     Color badgeColor;
     if (isMvp) {
       badgeColor = const Color(0xFF0044FF); // Blu MVP
-    } else if (isSV) badgeColor = const Color(0xFF334155); // Grigio S.V.
-    else if (r['numScore'] >= 6.0) badgeColor = const Color(0xFF0A7227); // Verde
-    else badgeColor = const Color(0xFFD50000); // Rosso
+    } else if (isSV) {
+      badgeColor = const Color(0xFF334155); // Grigio S.V.
+    } else if (scoreVal >= 6.7) {
+      badgeColor = const Color(0xFF0A7227); // Verde (Top match)
+    } else if (scoreVal >= 6.0) {
+      badgeColor = const Color(0xFFD97706); // Arancio ambra (Sufficienza piena 6.0 - 6.7)
+    } else {
+      badgeColor = const Color(0xFFD50000); // Rosso (< 6.0)
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
