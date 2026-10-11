@@ -3,6 +3,7 @@ import '../models/player_model.dart';
 import '../models/match_roster_player.dart';
 import '../services/storage_service.dart';
 import '../services/team_balancer.dart';
+import 'package:flutter/services.dart';
 
 class SquadBuilderScreen extends StatefulWidget {
   final Function(List<MatchRosterPlayer> home, List<MatchRosterPlayer> away)? onSendToScoreboard;
@@ -168,6 +169,48 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
     );
   }
 
+
+  Future<void> _copyLineupsToClipboard() async {
+    final t1 = _generatedTeams.team1;
+    final t2 = _generatedTeams.team2;
+    if (t1.isEmpty && t2.isEmpty) return;
+
+    final avg1 = _generatedTeams.avgOvr1.toStringAsFixed(1);
+    final avg2 = _generatedTeams.avgOvr2.toStringAsFixed(1);
+
+    var buffer = StringBuffer();
+    buffer.writeln('⚽ *FORMAZIONI DELLA PARTITA*\n');
+
+    buffer.writeln('🔵 *SQUADRA 1* (OVR Medio: $avg1) [${t1.length} giocatori]');
+    if (t1.isEmpty) {
+      buffer.writeln('• Nessun convocato');
+    } else {
+      for (var p in t1) {
+        buffer.writeln('• ${p.role.name} ${p.name}');
+      }
+    }
+
+    buffer.writeln('\n🔴 *SQUADRA 2* (OVR Medio: $avg2) [${t2.length} giocatori]');
+    if (t2.isEmpty) {
+      buffer.writeln('• Nessun convocato');
+    } else {
+      for (var p in t2) {
+        buffer.writeln('• ${p.role.name} ${p.name}');
+      }
+    }
+
+    await Clipboard.setData(ClipboardData(text: buffer.toString()));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Formazioni copiate negli appunti per WhatsApp!'),
+          backgroundColor: Color(0xFF10B981),
+        ),
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -262,17 +305,35 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white),
               ),
               if (_totalSelectedCount > 0)
-                ElevatedButton.icon(
-                  onPressed: _sendToScoreboard,
-                  icon: const Icon(Icons.sports_soccer, size: 16),
-                  label: const Text('Carica su Match'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B82F6),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
+                Row(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _copyLineupsToClipboard,
+                      icon: const Icon(Icons.copy, size: 15),
+                      label: const Text('Copia'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1E293B),
+                        foregroundColor: const Color(0xFF10B981),
+                        side: const BorderSide(color: Color(0xFF10B981)),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      onPressed: _sendToScoreboard,
+                      icon: const Icon(Icons.sports_soccer, size: 16),
+                      label: const Text('Carica su Match'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3B82F6),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                  ],
                 ),
             ],
           ),
@@ -479,6 +540,7 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
     required int fromTeamIdx,
   }) {
     return Container(
+      height: 285,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: const Color(0xFF111827),
@@ -497,49 +559,52 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
             style: const TextStyle(fontSize: 10, color: Color(0xFF94A3B8), fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          if (team.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Center(
-                child: Text(
-                  'Nessun giocatore',
-                  style: TextStyle(color: Color(0xFF64748B), fontSize: 11, fontStyle: FontStyle.italic),
-                ),
-              ),
-            )
-          else
-            ...team.map((p) => Container(
-                  margin: const EdgeInsets.only(bottom: 4),
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        p.role.name,
-                        style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: p.roleColor),
-                      ),
-                      const SizedBox(width: 5),
-                      Expanded(
-                        child: Text(
-                          p.name,
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+          Expanded(
+            child: team.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Tocca per inserire qui\ni convocati',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Color(0xFF475569), fontSize: 11, fontStyle: FontStyle.italic),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                      children: team.map((p) => Container(
+                        margin: const EdgeInsets.only(bottom: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E293B),
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                      ),
-                      InkWell(
-                        onTap: () => _swapPlayer(p, fromTeamIdx),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 2),
-                          child: Icon(Icons.swap_horiz, size: 16, color: Color(0xFF10B981)),
+                        child: Row(
+                          children: [
+                            Text(
+                              p.role.name,
+                              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: p.roleColor),
+                            ),
+                            const SizedBox(width: 5),
+                            Expanded(
+                              child: Text(
+                                p.name,
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () => _swapPlayer(p, fromTeamIdx),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 2),
+                                child: Icon(Icons.swap_horiz, size: 16, color: Color(0xFF10B981)),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      )).toList(),
+                    ),
                   ),
-                )),
+          ),
         ],
       ),
     );
