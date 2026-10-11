@@ -294,8 +294,49 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
     );
   }
 
+
+  String _calcTeamAverage(List<Map<String, dynamic>> teamRatings) {
+    // Esclude rigorosamente gli S.V. e i voti non validi
+    final validScores = teamRatings
+        .where((r) => r['score'] != 'S.V.' && r['numScore'] != null && (r['numScore'] as double) > 0)
+        .map((r) => r['numScore'] as double)
+        .toList();
+
+    if (validScores.isEmpty) return 'N.D.';
+    final avg = validScores.reduce((a, b) => a + b) / validScores.length;
+    return avg.toStringAsFixed(1);
+  }
+
+  Widget _buildTeamAvgBadge(String avg, Color teamColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: teamColor.withValues(alpha: 0.35), width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.star, size: 9, color: Color(0xFFEAB308)),
+          const SizedBox(width: 2.5),
+          Text(
+            '$avg',
+            style: const TextStyle(
+              color: Color(0xFFE2E8F0),
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _openMatchDetail(MatchHistoryModel m) {
     final ratings = _calculateMatchRatings(m);
+    final homeAvg = _calcTeamAverage(ratings['home']!);
+    final awayAvg = _calcTeamAverage(ratings['away']!);
 
     // Filtro rigoroso: solo azioni salienti reali
     const salienti = ['GOL', 'RIGORE_SEGNATO', 'RIGORE_SBAGLIATO', 'RIGORE_PARATO', 'AUTOGOL', 'GIALLO', 'ROSSO', 'SOSTITUZIONE'];
@@ -385,11 +426,29 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('${_getTeamEmoji(m.homeColorValue)} ${m.homeName.toUpperCase()}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13)),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '${_getTeamEmoji(m.homeColorValue)} ${m.homeName.toUpperCase()}',
+                                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13),
+                                    ),
+                                    _buildTeamAvgBadge(homeAvg, Color(m.homeColorValue)),
+                                  ],
+                                ),
                                 const SizedBox(height: 4),
                                 ...ratings['home']!.map((r) => _buildPagellaRow(r)),
                                 const Divider(color: Color(0xFF334155), height: 24),
-                                Text('${_getTeamEmoji(m.awayColorValue)} ${m.awayName.toUpperCase()}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13)),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '${_getTeamEmoji(m.awayColorValue)} ${m.awayName.toUpperCase()}',
+                                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13),
+                                    ),
+                                    _buildTeamAvgBadge(awayAvg, Color(m.awayColorValue)),
+                                  ],
+                                ),
                                 const SizedBox(height: 4),
                                 ...ratings['away']!.map((r) => _buildPagellaRow(r)),
                               ],

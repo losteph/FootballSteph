@@ -225,13 +225,8 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Box Contatore Convocati + Tasto Azzera
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF111827),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF334155)),
-            ),
+          SizedBox(
+            height: 36,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -268,7 +263,7 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
                       style: TextStyle(color: Color(0xFFEF4444), fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                       backgroundColor: const Color(0xFFEF4444).withValues(alpha: 0.1),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
@@ -296,20 +291,19 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
 
           const SizedBox(height: 16),
 
-          // Intestazione con pulsante Carica
+          // Intestazione con pulsanti: Copia, Carica.
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'SCHIERAMENTO SQUADRE',
+                'FORMAZIONI',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white),
               ),
-              if (_totalSelectedCount > 0)
                 Row(
                   children: [
                     ElevatedButton.icon(
-                      onPressed: _copyLineupsToClipboard,
-                      icon: const Icon(Icons.copy, size: 15),
+                      onPressed: _totalSelectedCount > 0 ? _copyLineupsToClipboard : null,
+                      icon: const Icon(Icons.copy, size: 14),
                       label: const Text('Copia'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1E293B),
@@ -322,13 +316,13 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton.icon(
-                      onPressed: _sendToScoreboard,
-                      icon: const Icon(Icons.sports_soccer, size: 16),
+                      onPressed: _totalSelectedCount > 0 ? _sendToScoreboard : null,
+                      icon: const Icon(Icons.sports_soccer, size: 15),
                       label: const Text('Carica su Match'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF3B82F6),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
