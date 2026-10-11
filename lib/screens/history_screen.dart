@@ -561,9 +561,9 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
       badgeColor = const Color(0xFF0044FF); // Blu MVP
     } else if (isSV) {
       badgeColor = const Color(0xFF334155); // Grigio S.V.
-    } else if (scoreVal >= 6.7) {
+    } else if (scoreVal >= 6.8) {
       badgeColor = const Color(0xFF0A7227); // Verde (Top match)
-    } else if (scoreVal >= 6.0) {
+    } else if (scoreVal >= 5.8) {
       badgeColor = const Color(0xFFD97706); // Arancio ambra (Sufficienza piena 6.0 - 6.7)
     } else {
       badgeColor = const Color(0xFFD50000); // Rosso (< 6.0)
