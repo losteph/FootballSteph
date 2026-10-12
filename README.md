@@ -47,4 +47,4 @@
 
 ---
 
-Per suggerimenti su come assegnare i voti ai giocatori/amici in maniera oggettiva per provare a rendere l'app quanto più equilibrata possibile e non farsi guidare dal sentimento ho provato a stilare questa [guida](guida-voti.md), sperando possa essere di aiuto e buona (ancora la devo testare). 
+Per suggerimenti su come assegnare i voti ai giocatori/amici in maniera oggettiva per provare a rendere l'app quanto più equilibrata possibile (si spera) ho provato a stilare questa [guida](guida-voti.md). Per capire invece come è stato pensato il file dei pagellini e come assegnare i voti correttamente (sperando escano bilanciati), puoi consultare questo [file](guida-pagellini.md).
