@@ -164,8 +164,8 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
 
         if (goals > 0) { score += (goals * 0.8); details.add('+$goals gol'); }
         if (assists > 0) { score += (assists * 0.4); details.add('+${assists * 0.5} ass'); }
-        if (penSaved > 0) { score += (penSaved * 1.5); details.add('+${penSaved * 1.5} rig.par'); }
-        if (penMissed > 0) { score -= (penMissed * 1.5); details.add('-${penMissed * 1.5} rig.sbagl'); }
+        if (penSaved > 0) { score += (penSaved * 1.2); details.add('+${penSaved * 1.5} rig.par'); }
+        if (penMissed > 0) { score -= (penMissed * 1.2); details.add('-${penMissed * 1.5} rig.sbagl'); }
         if (ownGoals > 0) { score -= (ownGoals * 1.0); details.add('-$ownGoals aut'); }
         if (yellows > 0) { score -= (yellows * 0.6); details.add('-$yellows gia'); }
         if (reds > 0) { score -= (reds * 1.5); details.add('-${reds * 2} ros'); }
@@ -175,10 +175,10 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         final foulMalus = fouls * 0.2;
         if (foulMalus > 0) { score -= foulMalus; details.add('-$foulMalus falli'); }
 
-        final gkMalus = goalsConceded * 0.2;
+        final gkMalus = goalsConceded * 0.1;
         if (gkMalus > 0) { score -= gkMalus; details.add('-$gkMalus gol sub'); }
 
-        if (p.gkPlayedSeconds >= 900 && goalsConceded == 0) { score += 1.5; details.add('+1.0 clean sheet'); }
+        if (p.gkPlayedSeconds >= 900 && goalsConceded == 0) { score += 1.0; details.add('+1.0 clean sheet'); }
 
         final errMalus = errors * 0.1;
         if (errMalus > 0) { score -= errMalus; details.add('-$errMalus err'); }

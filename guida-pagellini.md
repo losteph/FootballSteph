@@ -8,12 +8,12 @@ Questa guida stabilisce i criteri assoluti per l'assegnazione dei punteggi trami
 
 | Azione | Punti | 
 | :--- | :---: | 
-| **Rigore Parato** | `+1.5` | 
-| **Rigore Sbagliato** | `-1.5` | 
+| **Rigore Parato** | `+1.2` | 
+| **Rigore Sbagliato** | `-1.2` | 
 | **Autogol** | `-1.0` | 
 | **Gol / Rigore Segnato** | `+0.8` |
 | **Big Change Created** | `+0.4` | 
-| **Gol Subito (Portiere)** | `-0.2` | 
+| **Gol Subito (Portiere)** | `-0.1` | 
 | **Big Change Missed** | `-0.4` | 
 | **Assist** | `+0.4` | 
 | **Squadra Vince / Perde** | `+0.2` / `-0.2` | 
@@ -21,7 +21,7 @@ Questa guida stabilisce i criteri assoluti per l'assegnazione dei punteggi trami
 | **Buona Giocata** | `+0.1` | 
 | **Errore** | `-0.1` | 
 | **Cartellino Giallo / Rosso** | `-0.6` / `-1.5` | 
-| **Porta Inviolata / Clean Sheet** | `+1.5` | 
+| **Porta Inviolata / Clean Sheet** | `+1.0` | 
 
 
 ## Criteri Dettagliati per Azione (Guida Rapida per il Cronista)
