@@ -11,7 +11,7 @@ Questa guida stabilisce i criteri assoluti per l'assegnazione dei punteggi trami
 | **Rigore Parato** | `+1.5` | 
 | **Rigore Sbagliato** | `-1.5` | 
 | **Autogol** | `-1.0` | 
-| **Gol / Rigore Segnato** | `+0.8` / `+1.0` |
+| **Gol / Rigore Segnato** | `+0.8` |
 | **Big Change Created** | `+0.4` | 
 | **Gol Subito (Portiere)** | `-0.2` | 
 | **Big Change Missed** | `-0.4` | 
