@@ -614,7 +614,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         if (ownGoals > 0) { score -= (ownGoals * 1.0); details.add('-$ownGoals autogol'); }
         if (yellows > 0) { score -= (yellows * 0.6); details.add('-$yellows giallo'); }
         if (reds > 0) { score -= (reds * 1.5); details.add('-${reds * 2} rosso'); }
-        if (bigCreated > 0) { score += (bigCreated * 0.5); details.add('+${bigCreated * 0.5} big ch. creata'); }
+        if (bigCreated > 0) { score += (bigCreated * 0.4); details.add('+${bigCreated * 0.5} big ch. creata'); }
         if (goodPlays > 0) { score += (goodPlays * 0.1); details.add('+${(goodPlays * 0.1).toStringAsFixed(1)} giocata'); }
 
         final foulMalus = fouls * 0.2;
@@ -632,7 +632,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         if (errMalus > 0) { score -= errMalus; details.add('-$errMalus ($errors errori)'); }
 
         if (bigMisses > 0) {
-          final missMalus = bigMisses * 0.5;
+          final missMalus = bigMisses * 0.4;
           score -= missMalus;
           details.add('-$missMalus ($bigMisses gol divorati)');
         }

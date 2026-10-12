@@ -169,7 +169,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         if (ownGoals > 0) { score -= (ownGoals * 1.0); details.add('-$ownGoals aut'); }
         if (yellows > 0) { score -= (yellows * 0.6); details.add('-$yellows gia'); }
         if (reds > 0) { score -= (reds * 1.5); details.add('-${reds * 2} ros'); }
-        if (bigCreated > 0) { score += (bigCreated * 0.5); details.add('+${bigCreated * 0.5} ch.cre'); }
+        if (bigCreated > 0) { score += (bigCreated * 0.4); details.add('+${bigCreated * 0.5} ch.cre'); }
         if (goodPlays > 0) { score += (goodPlays * 0.1); details.add('+${(goodPlays * 0.1).toStringAsFixed(1)} gioc'); }
 
         final foulMalus = fouls * 0.2;
@@ -183,7 +183,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         final errMalus = errors * 0.1;
         if (errMalus > 0) { score -= errMalus; details.add('-$errMalus err'); }
 
-        if (bigMisses > 0) { score -= (bigMisses * 0.5); details.add('-${bigMisses * 0.5} gol div'); }
+        if (bigMisses > 0) { score -= (bigMisses * 0.4); details.add('-${bigMisses * 0.5} gol div'); }
 
         score = score.clamp(1.0, 10.0);
 
