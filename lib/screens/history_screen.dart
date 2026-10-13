@@ -162,13 +162,13 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         if (teamWon) { score += 0.2; details.add('+0.5 vit'); }
         else if (teamLost) { score -= 0.2; details.add('-0.5 sco'); }
 
-        if (goals > 0) { score += (goals * 0.8); details.add('+$goals gol'); }
-        if (assists > 0) { score += (assists * 0.4); details.add('+${assists * 0.5} ass'); }
+        if (goals > 0) { score += (goals * 1.0); details.add('+$goals gol'); }
+        if (assists > 0) { score += (assists * 0.5); details.add('+${assists * 0.5} ass'); }
         if (penSaved > 0) { score += (penSaved * 1.2); details.add('+${penSaved * 1.5} rig.par'); }
         if (penMissed > 0) { score -= (penMissed * 1.2); details.add('-${penMissed * 1.5} rig.sbagl'); }
         if (ownGoals > 0) { score -= (ownGoals * 1.0); details.add('-$ownGoals aut'); }
-        if (yellows > 0) { score -= (yellows * 0.6); details.add('-$yellows gia'); }
-        if (reds > 0) { score -= (reds * 1.5); details.add('-${reds * 2} ros'); }
+        if (yellows > 0) { score -= (yellows * 0.5); details.add('-$yellows gia'); }
+        if (reds > 0) { score -= (reds * 1.0); details.add('-${reds * 2} ros'); }
         if (bigCreated > 0) { score += (bigCreated * 0.4); details.add('+${bigCreated * 0.5} ch.cre'); }
         if (goodPlays > 0) { score += (goodPlays * 0.1); details.add('+${(goodPlays * 0.1).toStringAsFixed(1)} gioc'); }
 

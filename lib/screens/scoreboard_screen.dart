@@ -607,13 +607,13 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         if (teamWon) { score += 0.2; details.add('+0.2 vittoria'); } 
         else if (teamLost) { score -= 0.2; details.add('-0.2 sconfitta'); }
 
-        if (goals > 0) { score += (goals * 0.8); details.add('+$goals gol'); }
-        if (assists > 0) { score += (assists * 0.4); details.add('+${assists * 0.4} assist'); }
+        if (goals > 0) { score += (goals * 1.0); details.add('+$goals gol'); }
+        if (assists > 0) { score += (assists * 0.5); details.add('+${assists * 0.4} assist'); }
         if (penSaved > 0) { score += (penSaved * 1.2); details.add('+${penSaved * 1.5} rig. parato'); }
         if (penMissed > 0) { score -= (penMissed * 1.2); details.add('-${penMissed * 1.5} rig. sbagliato'); }
         if (ownGoals > 0) { score -= (ownGoals * 1.0); details.add('-$ownGoals autogol'); }
-        if (yellows > 0) { score -= (yellows * 0.6); details.add('-$yellows giallo'); }
-        if (reds > 0) { score -= (reds * 1.5); details.add('-${reds * 2} rosso'); }
+        if (yellows > 0) { score -= (yellows * 0.5); details.add('-$yellows giallo'); }
+        if (reds > 0) { score -= (reds * 1.0); details.add('-${reds * 2} rosso'); }
         if (bigCreated > 0) { score += (bigCreated * 0.4); details.add('+${bigCreated * 0.5} big ch. creata'); }
         if (goodPlays > 0) { score += (goodPlays * 0.1); details.add('+${(goodPlays * 0.1).toStringAsFixed(1)} giocata'); }
 

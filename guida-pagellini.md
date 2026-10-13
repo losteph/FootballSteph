@@ -11,16 +11,16 @@ Questa guida stabilisce i criteri assoluti per l'assegnazione dei punteggi trami
 | **Rigore Parato** | `+1.2` | 
 | **Rigore Sbagliato** | `-1.2` | 
 | **Autogol** | `-1.0` | 
-| **Gol / Rigore Segnato** | `+0.8` |
+| **Gol / Rigore Segnato** | `+1.0` |
 | **Big Change Created** | `+0.4` | 
 | **Gol Subito (Portiere)** | `-0.1` | 
 | **Big Change Missed** | `-0.4` | 
-| **Assist** | `+0.4` | 
+| **Assist** | `+0.5` | 
 | **Squadra Vince / Perde** | `+0.2` / `-0.2` | 
 | **Fallo Generico** | `-0.2` | 
 | **Buona Giocata** | `+0.1` | 
 | **Errore** | `-0.1` | 
-| **Cartellino Giallo / Rosso** | `-0.6` / `-1.5` | 
+| **Cartellino Giallo / Rosso** | `-0.5` / `-1.0` | 
 | **Porta Inviolata / Clean Sheet** | `+1.0` | 
 
 
@@ -28,7 +28,7 @@ Questa guida stabilisce i criteri assoluti per l'assegnazione dei punteggi trami
 
 ### 1. Big Change Created (`+0.4`) vs Buona Giocata (`+0.1`)
 * **Big Change Created (`+0.4`):** Quando un giocatore compie una giocata che mette il compagno **a tu per tu con il portiere** o a porta spalancata, e questi incredibilmente sbaglia. Vale come un assist morale.
-* **Buona Giocata (`+0.1` - Centrocampo/Attacco):** Un dribbling secco che libera spazio, un passaggio filtrante intelligente, un tiro nello specchio ma parato dal portiere. *(Fondamentale per premiare i centrocampisti di palleggio!)*
+* **Buona Giocata (`+0.1` - Centrocampo/Attacco):** Un dribbling secco che libera spazio, un passaggio filtrante intelligente, un tiro nello specchio della porta. *(Fondamentale per premiare i centrocampisti di palleggio!)*
 
 ### 2. Parata Miracolosa (`+0.4`) vs Parata Normale (`+0.1`)
 * **Big Chance Created (`+0.4`):** Un 1v1 sventato con tempismo, un tiro ravvicinato in area piccola o un salvataggio prodigioso.
