@@ -152,7 +152,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         final playedEnough = p.playedSeconds >= 300;
 
         if (!hasAction && !playedEnough) {
-          res[team]!.add({'id': p.dbId, 'num': p.num, 'name': p.name, 'score': 'S.V.', 'details': 'Meno di 5m', 'numScore': 0.0, 'isWinner': teamWon, 'bonusCount': 0});
+          res[team]!.add({'id': p.dbId, 'num': p.num, 'name': p.name, 'score': 'SV', 'details': 'Meno di 5m', 'numScore': 0.0, 'isWinner': teamWon, 'bonusCount': 0});
           continue;
         }
 
@@ -160,7 +160,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         final details = <String>[];
 
         if (teamWon) { score += 0.2; details.add('+0.5 vit'); }
-        else if (teamLost) { score -= 0.2; details.add('-0.5 sco'); }
+        else if (teamLost) { score -= 0.1; details.add('-0.5 sco'); }
 
         if (goals > 0) { score += (goals * 1.0); details.add('+$goals gol'); }
         if (assists > 0) { score += (assists * 0.5); details.add('+${assists * 0.5} ass'); }
@@ -185,7 +185,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
 
         if (bigMisses > 0) { score -= (bigMisses * 0.4); details.add('-${bigMisses * 0.5} gol div'); }
 
-        score = score.clamp(1.0, 10.0);
+        score = score.clamp(1.0, 9.9);
 
         final pData = {
           'id': p.dbId, 'num': p.num, 'name': p.name,
@@ -310,7 +310,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
   String _calcTeamAverage(List<Map<String, dynamic>> teamRatings) {
     // Esclude rigorosamente gli S.V. e i voti non validi
     final validScores = teamRatings
-        .where((r) => r['score'] != 'S.V.' && r['numScore'] != null && (r['numScore'] as double) > 0)
+        .where((r) => r['score'] != 'SV' && r['numScore'] != null && (r['numScore'] as double) > 0)
         .map((r) => r['numScore'] as double)
         .toList();
 
@@ -552,7 +552,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
 
   Widget _buildPagellaRow(Map<String, dynamic> r) {
     final isMvp = r['isMvp'] == true;
-    final isSV = r['score'] == 'S.V.';
+    final isSV = r['score'] == 'SV';
 
     final double scoreVal = double.tryParse(r['score']?.toString() ?? '') ?? 0.0;
 

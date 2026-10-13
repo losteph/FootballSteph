@@ -597,7 +597,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         final playedEnough = p.playedSeconds >= 300;
 
         if (!hasAction && !playedEnough) {
-          res[team]!.add({'num': p.num, 'name': p.name, 'score': 'S.V.', 'details': 'Meno di 5m e nessuna azione attiva'});
+          res[team]!.add({'num': p.num, 'name': p.name, 'score': 'SV', 'details': 'Meno di 5m e nessuna azione attiva'});
           continue;
         }
 
@@ -605,7 +605,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         final details = <String>[];
 
         if (teamWon) { score += 0.2; details.add('+0.2 vittoria'); } 
-        else if (teamLost) { score -= 0.2; details.add('-0.2 sconfitta'); }
+        else if (teamLost) { score -= 0.1; details.add('-0.2 sconfitta'); }
 
         if (goals > 0) { score += (goals * 1.0); details.add('+$goals gol'); }
         if (assists > 0) { score += (assists * 0.5); details.add('+${assists * 0.4} assist'); }
@@ -1054,8 +1054,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(color: r['score'] == 'S.V.' ? const Color(0xFF334155) : const Color(0xFF10B981).withValues(alpha: 0.2), borderRadius: BorderRadius.circular(6)),
-            child: Text(r['score'], style: TextStyle(color: r['score'] == 'S.V.' ? const Color(0xFF94A3B8) : const Color(0xFF10B981), fontWeight: FontWeight.w900, fontSize: 13)),
+            decoration: BoxDecoration(color: r['score'] == 'SV' ? const Color(0xFF334155) : const Color(0xFF10B981).withValues(alpha: 0.2), borderRadius: BorderRadius.circular(6)),
+            child: Text(r['score'], style: TextStyle(color: r['score'] == 'SV' ? const Color(0xFF94A3B8) : const Color(0xFF10B981), fontWeight: FontWeight.w900, fontSize: 13)),
           ),
         ],
       ),

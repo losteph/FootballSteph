@@ -16,7 +16,7 @@ Questa guida stabilisce i criteri assoluti per l'assegnazione dei punteggi trami
 | **Gol Subito (Portiere)** | `-0.1` | 
 | **Big Change Missed** | `-0.4` | 
 | **Assist** | `+0.5` | 
-| **Squadra Vince / Perde** | `+0.2` / `-0.2` | 
+| **Squadra Vince / Perde** | `+0.2` / `-0.1` | 
 | **Fallo Generico** | `-0.2` | 
 | **Buona Giocata** | `+0.1` | 
 | **Errore** | `-0.1` | 
