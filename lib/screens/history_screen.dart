@@ -165,7 +165,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
         if (goals > 0) { score += (goals * 1.0); details.add('+$goals gol'); }
         if (assists > 0) { score += (assists * 0.5); details.add('+${assists * 0.5} ass'); }
         if (penSaved > 0) { score += (penSaved * 1.2); details.add('+${penSaved * 1.5} rig.par'); }
-        if (penMissed > 0) { score -= (penMissed * 1.2); details.add('-${penMissed * 1.5} rig.sbagl'); }
+        if (penMissed > 0) { score -= (penMissed * 0.8); details.add('-${penMissed * 1.5} rig.sbagl'); }
         if (ownGoals > 0) { score -= (ownGoals * 1.0); details.add('-$ownGoals aut'); }
         if (yellows > 0) { score -= (yellows * 0.5); details.add('-$yellows gia'); }
         if (reds > 0) { score -= (reds * 1.0); details.add('-${reds * 2} ros'); }

@@ -9,7 +9,7 @@ Questa guida stabilisce i criteri assoluti per l'assegnazione dei punteggi trami
 | Azione | Punti | 
 | :--- | :---: | 
 | **Rigore Parato** | `+1.2` | 
-| **Rigore Sbagliato** | `-1.2` | 
+| **Rigore Sbagliato** | `-0.8` | 
 | **Autogol** | `-1.0` | 
 | **Gol / Rigore Segnato** | `+1.0` |
 | **Big Change Created** | `+0.4` | 
