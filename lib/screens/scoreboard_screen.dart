@@ -30,7 +30,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
   String _timerMode = 'countdown';
   bool _isMatchRunning = false;
   int _currentPeriod = 1;
-  String _periodLabel = '1° Tempo';
+  String _periodLabel = '1° T';
 
   Timer? _gkTimer;
   int _gkDurationSeconds = 5 * 60;

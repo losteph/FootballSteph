@@ -54,6 +54,19 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
     return '⚽';
   }
 
+  String _getPeriodHeader(String minute) {
+    final m = minute.toUpperCase();
+
+    if (m.contains('1°TS')) return '1° TEMPO SUPP.';
+    if (m.contains('2°TS')) return '2° TEMPO SUPP.';
+    
+    if (m.contains('1° T') || m.contains('1°T')) return '1° TEMPO';
+    if (m.contains('2° T') || m.contains('2°T')) return '2° TEMPO';
+    
+    if (m.contains('RIGOR') || m.contains('RIG')) return 'CALCI DI RIGORE';
+    return '';
+  }
+
   List<Map<String, dynamic>> _getScorersRanking() {
     final Map<String, Map<String, dynamic>> stats = {};
 
@@ -470,44 +483,87 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                           // SCHEDA 2: CRONACA SALIENTE
                           filteredEvents.isEmpty
                               ? const Center(child: Text('Nessuna azione saliente registrata.', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12)))
-                              : ListView.builder(
-                                  itemCount: filteredEvents.length,
-                                  itemBuilder: (c, idx) {
-                                    final e = filteredEvents.reversed.toList()[idx];
-                                    return Container(
-                                      margin: const EdgeInsets.only(bottom: 6),
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF1E293B),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFF10B981).withValues(alpha: 0.15),
-                                              borderRadius: BorderRadius.circular(4),
+                              : Builder(
+                                  builder: (context) {
+                                    // Lista in ordine cronologico dal 1° minuto alla fine
+                                    final chronologicalEvents = filteredEvents.reversed.toList();
+
+                                    return ListView.builder(
+                                      itemCount: chronologicalEvents.length,
+                                      itemBuilder: (c, idx) {
+                                        final e = chronologicalEvents[idx];
+
+                                        // Controllo cambio tempo rispetto all'azione precedente
+                                        final currentPeriod = _getPeriodHeader(e.minute);
+                                        final prevPeriod = idx > 0 ? _getPeriodHeader(chronologicalEvents[idx - 1].minute) : '';
+                                        final bool showDivider = currentPeriod.isNotEmpty && currentPeriod != prevPeriod;
+
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          children: [
+                                            // DIVISORE GRAFICO TRA I TEMPI
+                                            if (showDivider)
+                                              Padding(
+                                                padding: EdgeInsets.only(top: idx == 0 ? 4 : 14, bottom: 8),
+                                                child: Row(
+                                                  children: [
+                                                    const Expanded(child: Divider(color: Color(0xFF334155), thickness: 1)),
+                                                    Padding(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                      child: Text(
+                                                        currentPeriod,
+                                                        style: const TextStyle(
+                                                          color: Color(0xFF10B981),
+                                                          fontWeight: FontWeight.w900,
+                                                          fontSize: 10,
+                                                          letterSpacing: 1.1,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const Expanded(child: Divider(color: Color(0xFF334155), thickness: 1)),
+                                                  ],
+                                                ),
+                                              ),
+
+                                            // SINGOLO EVENTO SALIENTE
+                                            Container(
+                                              margin: const EdgeInsets.only(bottom: 6),
+                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFF1E293B),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                                                      borderRadius: BorderRadius.circular(4),
+                                                    ),
+                                                    child: Text(
+                                                      e.minute,
+                                                      style: const TextStyle(color: Color(0xFF10B981), fontWeight: FontWeight.bold, fontSize: 11, fontFamily: 'Courier'),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(e.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                                        if (e.sub.isNotEmpty)
+                                                          Text(e.sub, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 10)),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                            child: Text(
-                                              e.minute,
-                                              style: const TextStyle(color: Color(0xFF10B981), fontWeight: FontWeight.bold, fontSize: 11, fontFamily: 'Courier'),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(e.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-                                                if (e.sub.isNotEmpty)
-                                                  Text(e.sub, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 10)),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                          ],
+                                        );
+                                      },
                                     );
                                   },
                                 ),
