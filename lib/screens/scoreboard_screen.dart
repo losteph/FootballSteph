@@ -1508,7 +1508,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
             final idx = entry.key;
             final p = entry.value;
             return Container(
-              margin: const EdgeInsets.only(bottom: 4),
+              margin: const EdgeInsets.only(bottom: 6),
+              constraints: const BoxConstraints(minHeight: 40),
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
               decoration: BoxDecoration(color: p.inField ? const Color(0xFF1E293B) : const Color(0xFF0F172A), borderRadius: BorderRadius.circular(6), border: Border.all(color: p.inField ? const Color(0xFF334155) : const Color(0xFF1E293B))),
               child: Row(
@@ -1516,7 +1517,20 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                   Expanded(
                     child: InkWell(
                       onTap: () => _openPlayerActionModal(teamKey, idx),
-                      child: Text('#${p.num} ${p.name}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: p.inField ? Colors.white : const Color(0xFF64748B)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      child: Container(
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.symmetric(vertical: 4), // Rende sensibile tutta l'area
+                        child: Text(
+                          '#${p.num} ${p.name}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: p.inField ? Colors.white : const Color(0xFF64748B),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ),
                   ),
                   InkWell(

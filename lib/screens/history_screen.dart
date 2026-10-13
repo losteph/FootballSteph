@@ -57,8 +57,8 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
   String _getPeriodHeader(String minute) {
     final m = minute.toUpperCase();
 
-    if (m.contains('1°TS')) return '1° TEMPO SUPP.';
-    if (m.contains('2°TS')) return '2° TEMPO SUPP.';
+    if (m.contains('1°TS')) return '1° TEMPO SUPPLEMENTARE';
+    if (m.contains('2°TS')) return '2° TEMPO SUPPLEMENTARE';
     
     if (m.contains('1° T') || m.contains('1°T')) return '1° TEMPO';
     if (m.contains('2° T') || m.contains('2°T')) return '2° TEMPO';
