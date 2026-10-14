@@ -487,7 +487,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                                   builder: (context) {
                                     // Lista in ordine cronologico dal 1° minuto alla fine
                                     final chronologicalEvents = filteredEvents.reversed.toList();
-                                    final Map<String, int> penCount = {'home': 0, 'away': 0};
+                                    
 
                                     return ListView.builder(
                                       itemCount: chronologicalEvents.length,

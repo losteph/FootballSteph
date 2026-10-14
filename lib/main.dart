@@ -4,6 +4,7 @@ import 'screens/squad_builder_screen.dart';
 import 'models/match_roster_player.dart';
 import 'screens/scoreboard_screen.dart';
 import 'screens/history_screen.dart';
+import 'screens/teams_screen.dart';
 
 void main() {
   runApp(const StephCalcettoApp());
@@ -46,6 +47,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   List<MatchRosterPlayer> _liveHomePlayers = [];
   List<MatchRosterPlayer> _liveAwayPlayers = [];
+  String _liveHomeName = 'CASA';
+  String _liveAwayName = 'OSPITI';
+  Color _liveHomeColor = const Color(0xFF3B82F6);
+  Color _liveAwayColor = const Color(0xFFEF4444);
 
   final GlobalKey<SquadBuilderScreenState> _squadKey = GlobalKey<SquadBuilderScreenState>();
   final GlobalKey<HistoryScreenState> _historyKey = GlobalKey<HistoryScreenState>();
@@ -54,13 +59,35 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     setState(() {
       _liveHomePlayers = home;
       _liveAwayPlayers = away;
-      _currentIndex = 2; // Passa subito alla tab 2 (Scoreboard Live!)
+      _liveHomeName = 'CASA';
+      _liveAwayName = 'OSPITI';
+      _liveHomeColor = const Color(0xFF3B82F6);
+      _liveAwayColor = const Color(0xFFEF4444);
+      _currentIndex = 3; // Passa subito alla tab 3 (Scoreboard)
     });
   }
 
+  void _handleTeamsToMatch(
+    List<MatchRosterPlayer> home,
+    List<MatchRosterPlayer> away,
+    String homeName,
+    String awayName,
+    Color homeColor,
+    Color awayColor,
+  ) {
+    setState(() {
+      _liveHomePlayers = home;
+      _liveAwayPlayers = away;
+      _liveHomeName = homeName;
+      _liveAwayName = awayName;
+      _liveHomeColor = homeColor;
+      _liveAwayColor = awayColor;
+      _currentIndex = 3; // Passa alla tab 3 (Match)
+    });
+  }
 
   void _goToHistory() {
-    setState(() => _currentIndex = 3);
+    setState(() => _currentIndex = 4);
     // Sveglia la schermata dello storico forzando il caricamento
     _historyKey.currentState?.reload(); 
   }
@@ -71,9 +98,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final List<Widget> screens = [
       DatabaseScreen(onDataChanged: () {_squadKey.currentState?.reload(); _historyKey.currentState?.reload();}),
       SquadBuilderScreen(key: _squadKey, onSendToScoreboard: _handleSquadsToMatch),
+      TeamsScreen(onLoadMatch: _handleTeamsToMatch),
       ScoreboardScreen(
         initialHomePlayers: _liveHomePlayers,
         initialAwayPlayers: _liveAwayPlayers,
+        initialHomeName: _liveHomeName,
+        initialAwayName: _liveAwayName,
+        initialHomeColor: _liveHomeColor,
+        initialAwayColor: _liveAwayColor,
         onMatchFinished: _goToHistory,
       ),
       HistoryScreen(key: _historyKey),
@@ -106,6 +138,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               icon: Icon(Icons.badge_outlined),
               activeIcon: Icon(Icons.badge),
               label: 'Database',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shuffle),
+              activeIcon: Icon(Icons.shuffle),
+              label: 'Bilaniciatore',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.groups_outlined),

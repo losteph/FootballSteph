@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/player_model.dart';
 import '../models/match_history_model.dart';
+import '../models/team_model.dart';
 
 class StorageService {
   static const String _playersKey = 'calcetto_pro_players';
@@ -262,5 +263,43 @@ class StorageService {
     } catch (e) {
       return false;
     }
+  }
+
+
+  static const String _teamsKey = 'saved_teams_list';
+
+  static Future<List<TeamModel>> loadTeams() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_teamsKey);
+    if (jsonString == null || jsonString.isEmpty) return [];
+    try {
+      final List<dynamic> decoded = jsonDecode(jsonString);
+      return decoded.map((item) => TeamModel.fromJson(item as Map<String, dynamic>)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<void> saveTeams(List<TeamModel> teams) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = jsonEncode(teams.map((t) => t.toJson()).toList());
+    await prefs.setString(_teamsKey, jsonString);
+  }
+
+  static Future<void> saveSingleTeam(TeamModel team) async {
+    final teams = await loadTeams();
+    final idx = teams.indexWhere((t) => t.id == team.id);
+    if (idx != -1) {
+      teams[idx] = team;
+    } else {
+      teams.add(team);
+    }
+    await saveTeams(teams);
+  }
+
+  static Future<void> deleteTeam(String teamId) async {
+    final teams = await loadTeams();
+    teams.removeWhere((t) => t.id == teamId);
+    await saveTeams(teams);
   }
 }

@@ -10,12 +10,20 @@ import '../services/sound_service.dart';
 class ScoreboardScreen extends StatefulWidget {
   final List<MatchRosterPlayer> initialHomePlayers;
   final List<MatchRosterPlayer> initialAwayPlayers;
+  final String? initialHomeName;
+  final String? initialAwayName;
+  final Color? initialHomeColor;
+  final Color? initialAwayColor;
   final VoidCallback? onMatchFinished;
 
   const ScoreboardScreen({
     super.key,
     required this.initialHomePlayers,
     required this.initialAwayPlayers,
+    this.initialHomeName,
+    this.initialAwayName,
+    this.initialHomeColor,
+    this.initialAwayColor,
     this.onMatchFinished,
   });
 
@@ -100,6 +108,18 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
     if (widget.initialHomePlayers.isNotEmpty &&
         widget.initialHomePlayers != oldWidget.initialHomePlayers) {
       _setupInitialRosters();
+      if (widget.initialHomeName != null) {
+        _homeNameCtrl.text = widget.initialHomeName!;
+      }
+      if (widget.initialAwayName != null) {
+        _awayNameCtrl.text = widget.initialAwayName!;
+      }
+      if (widget.initialHomeColor != null) {
+        _homeColor = widget.initialHomeColor!;
+      }
+      if (widget.initialAwayColor != null) {
+        _awayColor = widget.initialAwayColor!;
+      }
     }
   }
 
