@@ -1045,7 +1045,9 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
               
               await Clipboard.setData(ClipboardData(text: text));
               if (mounted) {
-                Navigator.pop(ctx);
+                if (ctx.mounted) {
+                  Navigator.pop(ctx);
+                }
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pagelle copiate negli appunti!')));
               }
             },

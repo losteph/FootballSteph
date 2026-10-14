@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// ignore: constant_identifier_names
 enum PlayerRole { POR, DIF, CEN, ATT }
 
 enum CardTier { gold, silver, bronze }

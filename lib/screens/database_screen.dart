@@ -62,7 +62,9 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
               onPressed: () async {
                 final success = await StorageService.exportPlayersToFile(_allPlayers);
                 if (mounted && success) {
-                  Navigator.pop(ctx);
+                  if (ctx.mounted) {
+                    Navigator.pop(ctx);
+                  }
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('File giocatori esportato!'), backgroundColor: Color(0xFF10B981)),
                   );
@@ -83,7 +85,9 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
                 if (success) {
                   _loadData();
                   if (mounted) {
+                    if (ctx.mounted) {
                     Navigator.pop(ctx);
+                    }
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('File atleti caricato con successo!'), backgroundColor: Color(0xFF10B981)),
                     );

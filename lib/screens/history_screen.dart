@@ -277,7 +277,9 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
               onPressed: () async {
                 final success = await StorageService.exportMatchesToFile(_matches);
                 if (mounted && success) {
+                  if (ctx.mounted) {
                   Navigator.pop(ctx);
+                  }
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('File storico partite esportato!'), backgroundColor: Color(0xFF10B981)),
                   );
@@ -298,7 +300,9 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                 if (success) {
                   reload();
                   if (mounted) {
-                    Navigator.pop(ctx);
+                    if (ctx.mounted) {
+                      Navigator.pop(ctx);
+                    }
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Partite caricate con successo!'), backgroundColor: Color(0xFF10B981)),
                     );
@@ -346,7 +350,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
           const Icon(Icons.star, size: 9, color: Color(0xFFEAB308)),
           const SizedBox(width: 2.5),
           Text(
-            '$avg',
+            'avg',
             style: const TextStyle(
               color: Color(0xFFE2E8F0),
               fontSize: 9,
@@ -605,7 +609,11 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                             onPressed: () async {
                               await StorageService.deleteMatch(m.id);
                               reload();
-                              if (mounted) Navigator.pop(ctx);
+                              if (mounted) {
+                                if (ctx.mounted) {
+                                  Navigator.pop(ctx);
+                                }
+                              }
                             },
                           ),
                         ),
