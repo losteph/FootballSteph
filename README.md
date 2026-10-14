@@ -4,7 +4,7 @@
 
 **La piattaforma completa offline-first sviluppata in Flutter per gestire partite amatoriali di calcetto, formazioni bilanciate, club, tornei a classifica e pagelline automatiche.**
 
-[![Web App PWA](https://img.shields.io/badge/PWA-FootballSteph-3B82F6?style=for-the-badge&logo=googlechrome&logoColor=white)](https://losteph.github.io/FootballSteph/)
+[![Web App PWA](https://img.shields.io/badge/PWA-Football_Steph-3B82F6?style=for-the-badge&logo=googlechrome&logoColor=white)](https://losteph.github.io/FootballSteph/)
 
 </div>
 
