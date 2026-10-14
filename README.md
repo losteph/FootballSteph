@@ -19,11 +19,11 @@
 ## 📱 Screenshots
 
 <div align="center">
-  <img src="screenshots/1_database.jpeg" width="18%" alt="Database Atleti" />
-  <img src="screenshots/2_bilanciatore.jpeg" width="18%" alt="Bilanciatore" />
-  <img src="screenshots/3_match.jpeg" width="18%" alt="Scoreboard Live" />
-  <img src="screenshots/4_squadre.jpeg" width="18%" alt="Gestione Squadre" />
-  <img src="screenshots/5_tornei.jpeg" width="18%" alt="Tornei e Classifiche" />
+  <img src="screenshot/1_database.jpeg" width="18%" alt="Database Atleti" />
+  <img src="screenshot/2_bilanciatore.jpeg" width="18%" alt="Bilanciatore" />
+  <img src="screenshot/3_match.jpeg" width="18%" alt="Scoreboard Live" />
+  <img src="screenshot/4_squadre.jpeg" width="18%" alt="Gestione Squadre" />
+  <img src="screenshot/5_tornei.jpeg" width="18%" alt="Tornei e Classifiche" />
 </div>
 
 ---
