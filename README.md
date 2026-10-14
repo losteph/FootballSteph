@@ -1,6 +1,29 @@
+<div align="center">
+
 # ⚽ Football Steph
 
-**Football Steph** è un'applicazione mobile e web sviluppata in Flutter dedicata alla gestione completa di partite amatoriali di calcetto. Permette di gestire il database atleti con statistiche in stile card collezionabili, bilanciare automaticamente le formazioni in base ai ruoli e all'OVR, tracciare il tabellino live minuto per minuto e consultare cronaca, MVP e pagellini automatici delle partite scorse.
+**La piattaforma completa offline-first sviluppata in Flutter per gestire partite amatoriali di calcetto, formazioni bilanciate, club, tornei a classifica e pagelline automatiche.**
+
+[![Download APK](https://img.shields.io/badge/Android-Scarica_APK_Release-10B981?style=for-the-badge&logo=android&logoColor=white)](https://github.com/losteph/FootballSteph/releases/latest)
+[![Web App PWA](https://img.shields.io/badge/Web_App-Apri_PWA_Online-3B82F6?style=for-the-badge&logo=googlechrome&logoColor=white)](losteph.github.io/FootballSteph/)
+
+</div>
+
+---
+
+**Football Steph** è un'applicazione mobile e web sviluppata in Flutter dedicata alla gestione a 360° del calcetto tra amici. Permette di creare un database atleti con statistiche in stile card collezionabili, generare formazioni bilanciate automaticamente o gestire squadre fisse (Club), tracciare il tabellino live minuto per minuto, organizzare interi campionati con classifica in tempo reale e consultare cronaca, MVP e pagellini automatici a fine gara.
+
+---
+
+## 📱 Screenshots
+
+<div align="center">
+  <img src="screenshots/1_database.png" width="18%" alt="Database Atleti" />
+  <img src="screenshots/2_bilanciatore.png" width="18%" alt="Bilanciatore" />
+  <img src="screenshots/3_match.png" width="18%" alt="Scoreboard Live" />
+  <img src="screenshots/4_squadre.png" width="18%" alt="Gestione Squadre" />
+  <img src="screenshots/5_tornei.png" width="18%" alt="Tornei e Classifiche" />
+</div>
 
 ---
 
@@ -8,32 +31,41 @@
 
 ### 👥 Database Atleti
 - **Schede Stile FUT**: Valutazione complessiva (OVR) calcolata su voti da `C-` ad `A+` con fasce Oro, Argento e Bronzo.
-- **Ruoli Differenziati**: Gestione Portieri (POR), Difensori (DIF), Centrocampisti (CEN) e Attaccanti (ATT) con codici colore dedicati.
-- **Ricerca & Filtri**: Filtra per nome, ruolo e tier.
+- **Ruoli Differenziati**: Gestione Portieri (`POR`), Difensori (`DIF`), Centrocampisti (`CEN`) e Attaccanti (`ATT`) con pesi specifici e codici colore dedicati.
+- **Ricerca & Filtri Rapidi**: Filtra istantaneamente per nome, ruolo, metallo e ordina per OVR o ordine alfabetico.
 - **Backup & Ripristino**: Esportazione e importazione tramite file JSON senza sovrascrittura distruttiva (merge intelligente).
 
-### ⚖️ Squad Builder & Bilanciamento Automatico
-- **Vincolo Numerico Rigido**: Distribuzione perfettamente simmetrica dei convocati.
-- **Separazione dei Portieri**: Assegnazione equa dei portieri tra le due squadre.
-- **Algoritmo a Scambi Intra-Ruolo**: Minimizzerà lo scarto di OVR medio scambiando esclusivamente atleti con lo stesso ruolo.
-- **Scambio Manuale Rapido**: Pulsante rapido per invertire (eventualmente) dei giocatori tra le due formazioni prima dell'inizio.
+### ⚖️ Bilanciatore & Squad Builder
+- **Vincolo Numerico Rigido**: Distribuzione perfettamente simmetrica dei convocati selezionati.
+- **Separazione dei Portieri**: Assegnazione equa dei portieri tra le due formazioni.
+- **Algoritmo a Scambi Intra-Ruolo**: Minimizza lo scarto di OVR medio scambiando atleti con lo stesso ruolo.
+- **Scambio Manuale & Condivisione**: Pulsante rapido per invertire singoli giocatori tra le due squadre, copiare le distinte formattate per **WhatsApp** o inviarle direttamente allo Scoreboard Live.
+
+### 🛡️ Gestione Squadre (Club Fissi)
+- **Creazione Club Personalizzati**: Crea squadre permanenti con nome e colore sociale dedicato.
+- **Gestione Rosa, Titolari & Numeri**: Assegna i giocatori alla rosa, imposta i numeri di maglia personalizzati e scegli chi parte titolare (`IN`) o in panchina (`OUT`) con calcolo automatico dell'OVR medio dei titolari.
+- **Lancio Rapido Match**: Seleziona Casa vs Ospiti e avvia istantaneamente l'amichevole con rose e colori preimpostati.
+- **Import/Export Rose**: Backup JSON dedicato anche per l'archivio squadre.
 
 ### ⏱️ Scoreboard Live & Cronaca
-- **Gestione Tempi**: 1° Tempo, 2° Tempo, Supplementari e Sequenza Rigori di spareggio.
-- **Tracking Eventi**: Gol, Assist, Autogol, Ammonizioni, Espulsioni, Rigori Parati/Sbagliati, Falli e Big Chance Missed.
-- **Timer & Cronometro**: Monitoraggio in tempo reale del minutaggio complessivo e del tempo da portiere per ogni atleta.
+- **Gestione Tempi Completa**: 1° Tempo, 2° Tempo, Tempi Supplementari (`1°TS`, `2°TS`) e Sequenza Calci di Rigore.
+- **Tracking Eventi Dettagliato**: Gol, Assist, Autogol, Ammonizioni, Espulsioni, Sostituzioni, Rigori Parati/Sbagliati, Falli, Errori, Buone Giocate e Occasioni Create/Sbagliate.
+- **Timer & Cronometro Individuale**: Monitoraggio in tempo reale del minutaggio complessivo in campo e del tempo specifico giocato in porta per il bonus *Clean Sheet*.
 
-### 📊 Storico, Pagelle & Marcatori
-- **Pagelline Automatiche**: Algoritmo che calcola il voto finale (scala 1.0 - 10.0) combinando risultato di squadra, minutaggio, gol, assist e malus disciplinari/difensivi.
-- **Design a Colori**: 
-  - 🟢 Verde per voti $\ge 6.7$
-  - 🟠 Arancio / Ambra per la Sufficienza normale (6.0 - 6.6)
-  - 🔴 Rosso per voti $< 6.0$
-  - 🔵 Blu Elettrico con badge dedicato per l'**MVP**
-  - ⚫ Grigio per i Senza Voto (`S.V.`)
-- **Protezione Fase Rigori**: La lotteria dei rigori non altera i voti delle pagelle definiti nei tempi regolamentari.
-- **Dettaglio Match a Schede**: Visualizzazione a due tab tra *Formazioni & Voti* e *Cronaca Saliente*.
-- **Classifica Marcatori Assoluta**: Classifica aggregata automatica di tutti i giocatori ordinata per Gol e, a parità, per Assist.
+### 🏆 Hub Tornei, Storico & Pagelline Automatiche
+- **Gestione Campionati (Stile Lega)**: Crea infiniti tornei personalizzati iscrivendo le tue squadre. Ogni torneo dispone di 4 schede dedicate (*Classifica*, *Partite*, *Marcatori*, *Squadre*):
+  - **Classifica Automatica**: Calcolo in tempo reale di Punti (`PT`), Giocate (`G`), Vinte (`V`), Pareggiate (`N`), Sconfitte (`S`), Gol Fatti (`GF`), Gol Subiti (`GS`) e Differenza Reti (`DR`).
+  - **Gestione Ex-Aequo**: Ordinamento automatico in caso di arrivo a pari punti basato su Differenza Reti $\rightarrow$ Gol Fatti $\rightarrow$ Scontro Diretto.
+- **Filtro Competizioni**: Passa in un tocco dallo **Storico Globale** (tutte le partite) a **Solo Amichevoli** o ai singoli **Tornei**, con classifica marcatori e assist-man ricalcolata dinamicamente per la vista selezionata.
+- **Pagelline Automatiche & Media Squadra**: Algoritmo che calcola il voto finale (scala `1.0 - 9.9`) combinando risultato di squadra, minutaggio, bonus/malus ed eleggendo l'**MVP** del match tramite criteri di spareggio oggettivi. Include il calcolo della media voto complessiva di squadra (escludendo gli `S.V.`).
+- **Design Voti a Colori**:
+  - 🔵 **Blu Elettrico**: Migliore in campo (**MVP**)
+  - 🟢 **Verde**: Prestazioni top ($\ge 6.8$)
+  - 🟠 **Arancio / Ambra**: Sufficienza (da $5.8$ a $6.7$)
+  - 🔴 **Rosso**: Insufficienza ($< 5.8$)
+  - ⚫ **Grigio**: Senza Voto (`S.V.`, meno di 5 minuti giocati senza eventi)
+- **Protezione Fase Rigori**: La lotteria dei rigori finali decreta il vincitore ma non altera i voti delle pagelle maturati durante il gioco.
+- **Dettaglio Match a Schede**: Riepilogo post-partita diviso tra *👥 Formazioni & Voti* e *📜 Cronaca Saliente* suddivisa per tempi di gioco.
 
 ---
 
@@ -41,10 +73,13 @@
 
 - **Framework**: [Flutter](https://flutter.dev/) (Canale Stable)
 - **Linguaggio**: Dart
-- **Persistenza Dati**: `shared_preferences` (archiviazione locale JSON)
-- **Gestione File**: `file_picker` per import/export multipiattaforma
-- **Piattaforme Supportate**: Web, Android, iOS
+- **Persistenza Dati**: `shared_preferences` (archiviazione locale JSON 100% offline-first)
+- **Gestione File**: `file_picker` & `share_plus` per import/export multipiattaforma
+- **Piattaforme Supportate**: Web (PWA), Android (APK), Windows/iOS
 
 ---
 
-Per suggerimenti su come assegnare i voti ai giocatori/amici in maniera oggettiva per provare a rendere l'app quanto più equilibrata possibile (si spera) ho provato a stilare questa [guida](guida-voti.md). Per capire invece come è stato pensato il file dei pagellini e come assegnare i voti correttamente (sperando escano bilanciati), puoi consultare questo [file](guida-pagellini.md).
+## 📖 Guide di Riferimento
+
+Per suggerimenti su come assegnare i voti ai giocatori/amici in maniera oggettiva per rendere l'app quanto più equilibrata possibile, ho stilato questa [Guida ai Voti Atleti](guida-voti.md).  
+Per approfondire invece la matematica dietro il calcolo automatico delle pagelle post-partita e i bonus/malus, puoi consultare la [Guida ai Pagellini](guida-pagellini.md).
