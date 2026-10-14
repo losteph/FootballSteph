@@ -408,10 +408,10 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
             child: Row(
               children: [
                 _buildFilterChip('Tutti', 'ALL'),
-                _buildFilterChip('🧤 POR', 'POR'),
-                _buildFilterChip('🛡️ DIF', 'DIF'),
-                _buildFilterChip('⚙️ CEN', 'CEN'),
-                _buildFilterChip('⚡ ATT', 'ATT'),
+                _buildFilterChip('POR', 'POR'),
+                _buildFilterChip('DIF', 'DIF'),
+                _buildFilterChip('CEN', 'CEN'),
+                _buildFilterChip('ATT', 'ATT'),
               ],
             ),
           ),
@@ -508,20 +508,28 @@ class SquadBuilderScreenState extends State<SquadBuilderScreen> {
   Widget _buildFilterChip(String label, String value) {
     final isSelected = _roleFilter == value;
     return Padding(
-      padding: const EdgeInsets.only(right: 6),
-      child: ChoiceChip(
-        label: Text(label),
-        selected: isSelected,
-        onSelected: (_) => setState(() => _roleFilter = value),
-        selectedColor: const Color(0xFF10B981),
-        backgroundColor: const Color(0xFF1E293B),
-        labelStyle: TextStyle(
-          color: isSelected ? const Color(0xFF042F22) : const Color(0xFF94A3B8),
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
+      padding: const EdgeInsets.only(right: 5),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: () => setState(() => _roleFilter = value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFF10B981) : const Color(0xFF1E293B),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: isSelected ? const Color(0xFF10B981) : const Color(0xFF334155),
+            ),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? const Color(0xFF042F22) : const Color(0xFF94A3B8),
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        side: BorderSide(color: isSelected ? const Color(0xFF10B981) : const Color(0xFF334155)),
       ),
     );
   }

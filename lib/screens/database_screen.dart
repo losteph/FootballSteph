@@ -209,48 +209,14 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (val) => setState(() => _searchQuery = val),
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
-                  decoration: InputDecoration(
-                    hintText: 'Cerca giocatore...',
-                    hintStyle: const TextStyle(color: Color(0xFF64748B)),
-                    prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B), size: 20),
-                    filled: true,
-                    fillColor: const Color(0xFF111827),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: Color(0xFF334155)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: Color(0xFF10B981)),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.sort, color: Color(0xFF94A3B8)),
-                color: const Color(0xFF1E293B),
-                onSelected: (val) => setState(() => _sortBy = val),
-                itemBuilder: (ctx) => const [
-                  PopupMenuItem(value: 'ovr-desc', child: Text('OVR Decrescente', style: TextStyle(color: Colors.white, fontSize: 13))),
-                  PopupMenuItem(value: 'ovr-asc', child: Text('OVR Crescente', style: TextStyle(color: Colors.white, fontSize: 13))),
-                  PopupMenuItem(value: 'name-asc', child: Text('Nome (A-Z)', style: TextStyle(color: Colors.white, fontSize: 13))),
-                  PopupMenuItem(value: 'name-desc', child: Text('Nome (Z-A)', style: TextStyle(color: Colors.white, fontSize: 13))),
-                ],
-              ),
               IconButton(
                 onPressed: _showBackupDialog,
-                icon: const Icon(Icons.cloud_sync, color: Color(0xFF94A3B8)),
+                icon: const Icon(Icons.cloud_sync, color: Color(0xFF94A3B8), size: 22),
                 tooltip: 'Backup / Ripristino Atleti',
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 8),
               ElevatedButton.icon(
                 onPressed: () => _openPlayerModal(),
                 icon: const Icon(Icons.add, size: 18),
@@ -258,7 +224,8 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF10B981),
                   foregroundColor: const Color(0xFF042F22),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  minimumSize: Size.zero,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                 ),
@@ -267,6 +234,60 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
           ),
         ),
 
+        // Riga 2: Box Ricerca con a fianco il pulsante Filtro Ordinamento
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (val) => setState(() => _searchQuery = val),
+                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                  decoration: InputDecoration(
+                    hintText: 'Cerca giocatore...',
+                    hintStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 12),
+                    prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B), size: 18),
+                    filled: true,
+                    fillColor: const Color(0xFF111827),
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xFF334155)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xFF10B981)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                height: 36,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF111827),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF334155)),
+                ),
+                child: PopupMenuButton<String>(
+                  icon: const Icon(Icons.sort, color: Color(0xFF94A3B8), size: 20),
+                  color: const Color(0xFF1E293B),
+                  onSelected: (val) => setState(() => _sortBy = val),
+                  itemBuilder: (ctx) => const [
+                    PopupMenuItem(value: 'ovr-desc', child: Text('OVR Decrescente', style: TextStyle(color: Colors.white, fontSize: 13))),
+                    PopupMenuItem(value: 'ovr-asc', child: Text('OVR Crescente', style: TextStyle(color: Colors.white, fontSize: 13))),
+                    PopupMenuItem(value: 'name-asc', child: Text('Nome (A-Z)', style: TextStyle(color: Colors.white, fontSize: 13))),
+                    PopupMenuItem(value: 'name-desc', child: Text('Nome (Z-A)', style: TextStyle(color: Colors.white, fontSize: 13))),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 6),
+
         // Filtri per Ruolo
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -274,10 +295,10 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
           child: Row(
             children: [
               _buildFilterChip('Tutti', 'ALL', _roleFilter, (v) => setState(() => _roleFilter = v)),
-              _buildFilterChip('🧤 POR', 'POR', _roleFilter, (v) => setState(() => _roleFilter = v)),
-              _buildFilterChip('🛡️ DIF', 'DIF', _roleFilter, (v) => setState(() => _roleFilter = v)),
-              _buildFilterChip('⚙️ CEN', 'CEN', _roleFilter, (v) => setState(() => _roleFilter = v)),
-              _buildFilterChip('⚡ ATT', 'ATT', _roleFilter, (v) => setState(() => _roleFilter = v)),
+              _buildFilterChip('POR', 'POR', _roleFilter, (v) => setState(() => _roleFilter = v)),
+              _buildFilterChip('DIF', 'DIF', _roleFilter, (v) => setState(() => _roleFilter = v)),
+              _buildFilterChip('CEN', 'CEN', _roleFilter, (v) => setState(() => _roleFilter = v)),
+              _buildFilterChip('ATT', 'ATT', _roleFilter, (v) => setState(() => _roleFilter = v)),
             ],
           ),
         ),
@@ -289,9 +310,9 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
           child: Row(
             children: [
               _buildFilterChip('Tutti i Livelli', 'ALL', _tierFilter, (v) => setState(() => _tierFilter = v)),
-              _buildFilterChip('🥇 ORO', 'GOLD', _tierFilter, (v) => setState(() => _tierFilter = v)),
-              _buildFilterChip('🥈 ARGENTO', 'SILVER', _tierFilter, (v) => setState(() => _tierFilter = v)),
-              _buildFilterChip('🥉 BRONZO', 'BRONZE', _tierFilter, (v) => setState(() => _tierFilter = v)),
+              _buildFilterChip('🥇', 'GOLD', _tierFilter, (v) => setState(() => _tierFilter = v)),
+              _buildFilterChip('🥈', 'SILVER', _tierFilter, (v) => setState(() => _tierFilter = v)),
+              _buildFilterChip('🥉', 'BRONZE', _tierFilter, (v) => setState(() => _tierFilter = v)),
             ],
           ),
         ),
@@ -327,20 +348,28 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
   Widget _buildFilterChip(String label, String value, String activeValue, ValueChanged<String> onSelected) {
     final isSelected = activeValue == value;
     return Padding(
-      padding: const EdgeInsets.only(right: 6),
-      child: ChoiceChip(
-        label: Text(label),
-        selected: isSelected,
-        onSelected: (_) => onSelected(value),
-        selectedColor: const Color(0xFF10B981),
-        backgroundColor: const Color(0xFF1E293B),
-        labelStyle: TextStyle(
-          color: isSelected ? const Color(0xFF042F22) : const Color(0xFF94A3B8),
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
+      padding: const EdgeInsets.only(right: 5),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: () => onSelected(value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFF10B981) : const Color(0xFF1E293B),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: isSelected ? const Color(0xFF10B981) : const Color(0xFF334155),
+            ),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? const Color(0xFF042F22) : const Color(0xFF94A3B8),
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        side: BorderSide(color: isSelected ? const Color(0xFF10B981) : const Color(0xFF334155)),
       ),
     );
   }
