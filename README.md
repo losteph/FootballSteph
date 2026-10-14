@@ -3,8 +3,9 @@
 # ⚽ Football Steph
 
 **La piattaforma completa offline-first sviluppata in Flutter per gestire partite amatoriali di calcetto, formazioni bilanciate, club, tornei a classifica e pagelline automatiche.**
-
+<--
 [![Download APK](https://img.shields.io/badge/Android-Scarica_APK_Release-10B981?style=for-the-badge&logo=android&logoColor=white)](https://github.com/losteph/FootballSteph/releases/latest)
+-->
 [![Web App PWA](https://img.shields.io/badge/Web_App-Apri_PWA_Online-3B82F6?style=for-the-badge&logo=googlechrome&logoColor=white)](https://losteph.github.io/FootballSteph/)
 
 </div>
@@ -18,11 +19,11 @@
 ## 📱 Screenshots
 
 <div align="center">
-  <img src="screenshots/1_database.png" width="18%" alt="Database Atleti" />
-  <img src="screenshots/2_bilanciatore.png" width="18%" alt="Bilanciatore" />
-  <img src="screenshots/3_match.png" width="18%" alt="Scoreboard Live" />
-  <img src="screenshots/4_squadre.png" width="18%" alt="Gestione Squadre" />
-  <img src="screenshots/5_tornei.png" width="18%" alt="Tornei e Classifiche" />
+  <img src="screenshots/1_database.jpeg" width="18%" alt="Database Atleti" />
+  <img src="screenshots/2_bilanciatore.jpeg" width="18%" alt="Bilanciatore" />
+  <img src="screenshots/3_match.jpeg" width="18%" alt="Scoreboard Live" />
+  <img src="screenshots/4_squadre.jpeg" width="18%" alt="Gestione Squadre" />
+  <img src="screenshots/5_tornei.jpeg" width="18%" alt="Tornei e Classifiche" />
 </div>
 
 ---
