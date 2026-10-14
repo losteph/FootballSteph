@@ -379,7 +379,6 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           _awayScore++;
         }
         var subText = 'Squadra: $teamName';
-        if (opposingGK != null) subText += ' • (Gol subito: #${opposingGK.num} ${opposingGK.name})';
         _logEvent('⚽ GOL', subText, _getElapsedFormatted(), team: team, type: 'GOL', gkConcededId: opposingGK?.dbId);
       }
     });
@@ -846,7 +845,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           }
           var sub = 'Squadra: $teamName';
           if (assist != null && type == 'GOL') sub += ' • 🅰 Assist: $assist';
-          if (opposingGK != null) sub += ' • (Gol subito: #${opposingGK.num} ${opposingGK.name})';
+          
           _logEvent(
             type == 'GOL' ? '⚽ GOL! #${p.num} ${p.name}' : '👟 RIGORE! #${p.num} ${p.name}',
             sub,
@@ -1124,7 +1123,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
     
     text += onlyHighlights ? '\n📜 *AZIONI SALIENTI:*\n' : '\n📜 *CRONACA COMPLETA:*\n';
     
-    final salienti = ['GOL', 'RIGORE_SEGNATO', 'RIGORE_SBAGLIATO', 'RIGORE_PARATO', 'AUTOGOL', 'GIALLO', 'ROSSO', 'SOSTITUZIONE'];
+    final salienti = ['GOL', 'RIGORE_SEGNATO', 'RIGORE_SBAGLIATO', 'AUTOGOL', 'GIALLO', 'ROSSO', 'SOSTITUZIONE'];
     final filteredEvents = onlyHighlights ? _events.where((e) => salienti.contains(e.type)).toList() : _events.toList();
     
     if (filteredEvents.isEmpty) {

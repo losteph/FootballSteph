@@ -364,7 +364,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
     final awayAvg = _calcTeamAverage(ratings['away']!);
 
     // Filtro rigoroso: solo azioni salienti reali
-    const salienti = ['GOL', 'RIGORE_SEGNATO', 'RIGORE_SBAGLIATO', 'RIGORE_PARATO', 'AUTOGOL', 'GIALLO', 'ROSSO', 'SOSTITUZIONE'];
+    const salienti = ['GOL', 'RIGORE_SEGNATO', 'RIGORE_SBAGLIATO', 'AUTOGOL', 'GIALLO', 'ROSSO', 'SOSTITUZIONE'];
     final filteredEvents = m.events.where((e) => salienti.contains(e.type)).toList();
 
     showModalBottomSheet(
@@ -487,11 +487,16 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                                   builder: (context) {
                                     // Lista in ordine cronologico dal 1° minuto alla fine
                                     final chronologicalEvents = filteredEvents.reversed.toList();
+                                    final Map<String, int> penCount = {'home': 0, 'away': 0};
 
                                     return ListView.builder(
                                       itemCount: chronologicalEvents.length,
                                       itemBuilder: (c, idx) {
                                         final e = chronologicalEvents[idx];
+
+                                        final String badgeText = e.isPenalty
+                                            ? '${chronologicalEvents.sublist(0, idx + 1).where((x) => x.isPenalty && x.team == e.team).length}'
+                                            : e.minute.replaceAll(RegExp(r'^(1°TS|2°TS|1°\s*T(empo)?|2°\s*T(empo)?)\s*', caseSensitive: false), '');
 
                                         // Controllo cambio tempo rispetto all'azione precedente
                                         final currentPeriod = _getPeriodHeader(e.minute);
@@ -535,6 +540,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                                               ),
                                               child: Row(
                                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                                textDirection: e.team == 'away' ? TextDirection.rtl : TextDirection.ltr,
                                                 children: [
                                                   Container(
                                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -543,7 +549,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                                                       borderRadius: BorderRadius.circular(4),
                                                     ),
                                                     child: Text(
-                                                      e.minute,
+                                                      badgeText,
                                                       style: const TextStyle(color: Color(0xFF10B981), fontWeight: FontWeight.bold, fontSize: 11, fontFamily: 'Courier'),
                                                     ),
                                                   ),
@@ -551,10 +557,19 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                                                   Expanded(
                                                     child: Column(
                                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                                      textDirection: e.team == 'away' ? TextDirection.rtl : TextDirection.ltr,
                                                       children: [
-                                                        Text(e.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                                        Text(
+                                                          e.title,
+                                                          textAlign: e.team == 'away' ? TextAlign.right : TextAlign.left,
+                                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)
+                                                          ),
                                                         if (e.sub.isNotEmpty)
-                                                          Text(e.sub, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 10)),
+                                                          Text(
+                                                            e.sub.replaceAll(RegExp(r'Squadra:\s*[^•\n]+(•\s*)?', caseSensitive: false), '').trim(),
+                                                            textAlign: e.team == 'away' ? TextAlign.right : TextAlign.left, 
+                                                            style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 10)
+                                                            ),
                                                       ],
                                                     ),
                                                   ),
