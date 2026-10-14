@@ -1,20 +1,24 @@
 class TeamPlayerEntry {
   final String playerId;
   bool isStarter; // true = Titolare (IN), false = Panchina (OUT)
+  String? customNum; // Numero di maglia personalizzato
 
   TeamPlayerEntry({
     required this.playerId,
     this.isStarter = true,
+    this.customNum,
   });
 
   Map<String, dynamic> toJson() => {
         'playerId': playerId,
         'isStarter': isStarter,
+        'customNum': customNum,
       };
 
   factory TeamPlayerEntry.fromJson(Map<String, dynamic> json) => TeamPlayerEntry(
         playerId: json['playerId'] as String,
         isStarter: json['isStarter'] as bool? ?? true,
+        customNum: json['customNum'] as String?,
       );
 }
 

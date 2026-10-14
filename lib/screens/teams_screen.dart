@@ -26,9 +26,8 @@ class _TeamsScreenState extends State<TeamsScreen> {
   bool _isLoading = true;
 
   String _searchQuery = '';
-  String _sortBy = 'ovr_desc'; // 'ovr_desc', 'ovr_asc', 'name_asc'
+  String _sortBy = 'ovr_desc';
 
-  // Selezione per match: max 2 squadre
   TeamModel? _selectedHome;
   TeamModel? _selectedAway;
 
@@ -62,6 +61,38 @@ class _TeamsScreenState extends State<TeamsScreen> {
     }
   }
 
+  int _getRolePriority(PlayerRole role) {
+    switch (role) {
+      case PlayerRole.POR:
+        return 0;
+      case PlayerRole.DIF:
+        return 1;
+      case PlayerRole.CEN:
+        return 2;
+      case PlayerRole.ATT:
+        return 3;
+    }
+  }
+
+  void _sortRoster(List<TeamPlayerEntry> roster) {
+    roster.sort((a, b) {
+      // 1. Prima Titolari (true) poi Riserve (false)
+      if (a.isStarter != b.isStarter) {
+        return a.isStarter ? -1 : 1;
+      }
+
+      // 2. Ordinamento per Ruolo: POR -> DIF -> CEN -> ATT
+      final pA = _dbPlayers.firstWhere((p) => p.id == a.playerId, orElse: () => PlayerModel(id: '', name: '', role: PlayerRole.CEN, stats: {}));
+      final pB = _dbPlayers.firstWhere((p) => p.id == b.playerId, orElse: () => PlayerModel(id: '', name: '', role: PlayerRole.CEN, stats: {}));
+
+      final roleCmp = _getRolePriority(pA.role).compareTo(_getRolePriority(pB.role));
+      if (roleCmp != 0) return roleCmp;
+
+      // 3. A parità di ruolo, per OVR decrescente
+      return pB.ovrData.numeric.compareTo(pA.ovrData.numeric);
+    });
+  }
+
   double _calculateStartersOvr(TeamModel team) {
     final starterIds = team.roster.where((r) => r.isStarter).map((r) => r.playerId).toSet();
     final starters = _dbPlayers.where((p) => starterIds.contains(p.id)).toList();
@@ -76,16 +107,12 @@ class _TeamsScreenState extends State<TeamsScreen> {
     }).toList();
 
     list.sort((a, b) {
-      if (_sortBy == 'name_asc') {
-        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-      }
+      if (_sortBy == 'name_asc') return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      if (_sortBy == 'name_desc') return b.name.toLowerCase().compareTo(a.name.toLowerCase());
       final ovrA = _calculateStartersOvr(a);
       final ovrB = _calculateStartersOvr(b);
-      if (_sortBy == 'ovr_desc') {
-        return ovrB.compareTo(ovrA);
-      } else {
-        return ovrA.compareTo(ovrB);
-      }
+      if (_sortBy == 'ovr_desc') return ovrB.compareTo(ovrA);
+      return ovrA.compareTo(ovrB);
     });
 
     return list;
@@ -102,7 +129,6 @@ class _TeamsScreenState extends State<TeamsScreen> {
       } else if (_selectedAway == null) {
         _selectedAway = team;
       } else {
-        // Se entrambe piene, sostituisce la seconda
         _selectedAway = team;
       }
     });
@@ -110,16 +136,23 @@ class _TeamsScreenState extends State<TeamsScreen> {
 
   List<MatchRosterPlayer> _convertToRoster(TeamModel team) {
     final List<MatchRosterPlayer> roster = [];
-    for (int i = 0; i < team.roster.length; i++) {
-      final entry = team.roster[i];
+    final sortedEntries = List<TeamPlayerEntry>.from(team.roster);
+    _sortRoster(sortedEntries);
+
+    for (int i = 0; i < sortedEntries.length; i++) {
+      final entry = sortedEntries[i];
       final dbP = _dbPlayers.firstWhere(
         (p) => p.id == entry.playerId,
         orElse: () => PlayerModel(id: entry.playerId, name: 'Giocatore', role: PlayerRole.CEN, stats: {}),
       );
 
+      final shirtNumber = (entry.customNum != null && entry.customNum!.trim().isNotEmpty)
+          ? entry.customNum!.trim()
+          : '${i + 1}';
+
       roster.add(MatchRosterPlayer(
         dbId: dbP.id,
-        num: '${i + 1}',
+        num: shirtNumber,
         name: dbP.name,
         inField: entry.isStarter,
         isGK: i == 0 && entry.isStarter && dbP.role == PlayerRole.POR,
@@ -148,8 +181,14 @@ class _TeamsScreenState extends State<TeamsScreen> {
     final nameCtrl = TextEditingController(text: existing?.name ?? '');
     int selectedColorVal = existing?.colorValue ?? _teamColors.values.first.toARGB32();
     List<TeamPlayerEntry> currentRoster = existing != null
-        ? List.from(existing.roster.map((e) => TeamPlayerEntry(playerId: e.playerId, isStarter: e.isStarter)))
+        ? List.from(existing.roster.map((e) => TeamPlayerEntry(playerId: e.playerId, isStarter: e.isStarter, customNum: e.customNum)))
         : [];
+
+    _sortRoster(currentRoster);
+
+    String playerSearchQuery = '';
+    String selectedRoleFilter = 'ALL';
+    String playerSort = 'ovr_desc';
 
     showModalBottomSheet(
       context: context,
@@ -160,40 +199,65 @@ class _TeamsScreenState extends State<TeamsScreen> {
         builder: (ctx, setMState) {
           final selectedPlayerIds = currentRoster.map((e) => e.playerId).toSet();
 
+          final availablePlayers = _dbPlayers.where((p) {
+            final matchName = p.name.toLowerCase().contains(playerSearchQuery.toLowerCase());
+            final matchRole = selectedRoleFilter == 'ALL' || p.role.name == selectedRoleFilter;
+            return matchName && matchRole;
+          }).toList();
+
+          availablePlayers.sort((a, b) {
+            if (playerSort == 'name_asc') return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+            if (playerSort == 'name_desc') return b.name.toLowerCase().compareTo(a.name.toLowerCase());
+            if (playerSort == 'ovr_desc') return b.ovrData.numeric.compareTo(a.ovrData.numeric);
+            return a.ovrData.numeric.compareTo(b.ovrData.numeric);
+          });
+
           return Padding(
             padding: EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 20,
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+              left: 14,
+              right: 14,
+              top: 16,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
             ),
             child: SizedBox(
-              height: MediaQuery.of(ctx).size.height * 0.85,
+              height: MediaQuery.of(ctx).size.height * 0.92,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    existing == null ? 'Nuova Squadra' : 'Modifica Squadra',
-                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        existing == null ? 'Nuova Squadra' : 'Modifica Squadra',
+                        style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Color(0xFF94A3B8)),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 8),
 
-                  // Nome e Colore
+                  // NOME E COLORE
                   Row(
                     children: [
                       Expanded(
                         child: TextField(
                           controller: nameCtrl,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
                           decoration: InputDecoration(
                             labelText: 'Nome Squadra',
+                            labelStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
                             filled: true,
                             fillColor: const Color(0xFF1E293B),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 8),
                       DropdownButton<int>(
                         value: selectedColorVal,
                         dropdownColor: const Color(0xFF1E293B),
@@ -216,72 +280,296 @@ class _TeamsScreenState extends State<TeamsScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 14),
-                  const Text('Giocatori in Rosa (Spunta chi è TITOLARE):', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
 
-                  // Lista Giocatori con Checkbox Titolare
+                  // 1. BOX ROSA SQUADRA (CAPIENTE FINO A 11 GIOCATORI SENZA SCROLL)
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Color(selectedColorVal).withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Color(selectedColorVal), width: 1.5),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'ROSA SQUADRA (${currentRoster.length})',
+                              style: TextStyle(
+                                color: Color(selectedColorVal),
+                                fontWeight: FontWeight.w900,
+                                fontSize: 12,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            Text(
+                              '${currentRoster.where((r) => r.isStarter).length} Titolari (IN)',
+                              style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        SizedBox(
+                          height: 230, // OSPITA COMODAMENTE 11 GIOCATORI
+                          child: currentRoster.isEmpty
+                              ? const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  child: Center(
+                                    child: Text(
+                                      'Nessun giocatore in rosa.\nAggiungili selezionandoli sotto.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Color(0xFF64748B), fontSize: 12),
+                                    ),
+                                  ),
+                                )
+                              : ListView.builder(
+                                  itemCount: currentRoster.length,
+                                  itemBuilder: (c, idx) {
+                                    final entry = currentRoster[idx];
+                                    final p = _dbPlayers.firstWhere(
+                                      (x) => x.id == entry.playerId,
+                                      orElse: () => PlayerModel(id: entry.playerId, name: 'Giocatore', role: PlayerRole.CEN, stats: {}),
+                                    );
+
+                                    return Container(
+                                      margin: const EdgeInsets.only(bottom: 4),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF1E293B),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: entry.isStarter ? const Color(0xFF10B981) : const Color(0xFF334155),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          // NUMERO DI MAGLIA MODIFICABILE
+                                          SizedBox(
+                                            width: 28,
+                                            height: 24,
+                                            child: TextFormField(
+                                              initialValue: entry.customNum ?? '${idx + 1}',
+                                              keyboardType: TextInputType.number,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                                              decoration: InputDecoration(
+                                                contentPadding: EdgeInsets.zero,
+                                                filled: true,
+                                                fillColor: const Color(0xFF0F172A),
+                                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: BorderSide.none),
+                                              ),
+                                              onChanged: (val) {
+                                                entry.customNum = val.trim();
+                                              },
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+
+                                          // BADGE RUOLO COLORATO
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: p.roleColor.withValues(alpha: 0.2),
+                                              borderRadius: BorderRadius.circular(4),
+                                              border: Border.all(color: p.roleColor.withValues(alpha: 0.6), width: 1),
+                                            ),
+                                            child: Text(
+                                              p.role.name,
+                                              style: TextStyle(color: p.roleColor, fontWeight: FontWeight.w900, fontSize: 10),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+
+                                          // NOME E OVR
+                                          Expanded(
+                                            child: Text(
+                                              '${p.name} • ${p.ovrData.numeric}',
+                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+
+                                          // TOGGLE TITOLARE (IN / OUT) CON RE-ORDINAMENTO
+                                          InkWell(
+                                            onTap: () {
+                                              setMState(() {
+                                                entry.isStarter = !entry.isStarter;
+                                                _sortRoster(currentRoster);
+                                              });
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: entry.isStarter ? const Color(0xFF10B981).withValues(alpha: 0.2) : const Color(0xFF334155),
+                                                borderRadius: BorderRadius.circular(6),
+                                                border: Border.all(color: entry.isStarter ? const Color(0xFF10B981) : Colors.transparent),
+                                              ),
+                                              child: Text(
+                                                entry.isStarter ? 'IN' : 'OUT',
+                                                style: TextStyle(
+                                                  color: entry.isStarter ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
+                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 11,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+
+                                          // TASTO RIMUOVI
+                                          InkWell(
+                                            onTap: () {
+                                              setMState(() {
+                                                currentRoster.removeAt(idx);
+                                                _sortRoster(currentRoster);
+                                              });
+                                            },
+                                            child: const Padding(
+                                              padding: EdgeInsets.all(4),
+                                              child: Icon(Icons.close, size: 16, color: Color(0xFFEF4444)),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // 2. CERCA E FILTRI GIOCATORI DISPONIBILI
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          onChanged: (val) => setMState(() => playerSearchQuery = val),
+                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          decoration: InputDecoration(
+                            hintText: 'Cerca per aggiungere...',
+                            hintStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 11),
+                            prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B), size: 16),
+                            filled: true,
+                            fillColor: const Color(0xFF1E293B),
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(8)),
+                        child: DropdownButton<String>(
+                          value: playerSort,
+                          dropdownColor: const Color(0xFF1E293B),
+                          underline: const SizedBox(),
+                          style: const TextStyle(color: Colors.white, fontSize: 11),
+                          items: const [
+                            DropdownMenuItem(value: 'ovr_desc', child: Text('OVR ↓')),
+                            DropdownMenuItem(value: 'ovr_asc', child: Text('OVR ↑')),
+                            DropdownMenuItem(value: 'name_asc', child: Text('A-Z')),
+                            DropdownMenuItem(value: 'name_desc', child: Text('Z-A')),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) setMState(() => playerSort = v);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+
+                  // CHIP FILTRO RUOLI RAPIDI
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: ['ALL', 'POR', 'DIF', 'CEN', 'ATT'].map((role) {
+                        final active = selectedRoleFilter == role;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: InkWell(
+                            onTap: () => setMState(() => selectedRoleFilter = role),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: active ? const Color(0xFF10B981) : const Color(0xFF1E293B),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                role,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: active ? const Color(0xFF042F22) : const Color(0xFF94A3B8),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  // LISTA DISPONIBILI DAL DATABASE
                   Expanded(
                     child: ListView.builder(
-                      itemCount: _dbPlayers.length,
+                      itemCount: availablePlayers.length,
                       itemBuilder: (c, idx) {
-                        final p = _dbPlayers[idx];
-                        final isIncluded = selectedPlayerIds.contains(p.id);
-                        final entry = isIncluded ? currentRoster.firstWhere((r) => r.playerId == p.id) : null;
+                        final p = availablePlayers[idx];
+                        final isAlreadyInTeam = selectedPlayerIds.contains(p.id);
 
                         return Container(
-                          margin: const EdgeInsets.only(bottom: 6),
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          margin: const EdgeInsets.only(bottom: 3),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: isIncluded ? const Color(0xFF1E293B) : const Color(0xFF111827),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: isIncluded ? const Color(0xFF334155) : Colors.transparent),
+                            color: isAlreadyInTeam ? const Color(0xFF1E293B).withValues(alpha: 0.5) : const Color(0xFF111827),
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Checkbox(
-                                value: isIncluded,
-                                activeColor: const Color(0xFF10B981),
-                                onChanged: (val) {
-                                  setMState(() {
-                                    if (val == true) {
-                                      currentRoster.add(TeamPlayerEntry(playerId: p.id, isStarter: true));
-                                    } else {
-                                      currentRoster.removeWhere((r) => r.playerId == p.id);
-                                    }
-                                  });
-                                },
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: p.roleColor.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(p.role.name, style: TextStyle(color: p.roleColor, fontWeight: FontWeight.bold, fontSize: 9)),
                               ),
+                              const SizedBox(width: 6),
                               Expanded(
                                 child: Text(
-                                  '${p.name} (${p.role.name}) - OVR ${p.ovrData.numeric}',
-                                  style: TextStyle(color: isIncluded ? Colors.white : const Color(0xFF64748B), fontWeight: FontWeight.bold, fontSize: 13),
+                                  '${p.name} • OVR ${p.ovrData.numeric}',
+                                  style: TextStyle(
+                                    color: isAlreadyInTeam ? Colors.white54 : Colors.white,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
-                              if (isIncluded)
-                                InkWell(
-                                  onTap: () {
+                              if (!isAlreadyInTeam)
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  onPressed: () {
                                     setMState(() {
-                                      entry.isStarter = !entry.isStarter;
+                                      currentRoster.add(TeamPlayerEntry(playerId: p.id, isStarter: true));
+                                      _sortRoster(currentRoster);
                                     });
                                   },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: entry!.isStarter ? const Color(0xFF10B981).withValues(alpha: 0.2) : const Color(0xFF334155),
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(color: entry.isStarter ? const Color(0xFF10B981) : Colors.transparent),
-                                    ),
-                                    child: Text(
-                                      entry.isStarter ? 'TITOLARE' : 'PANCHINA',
-                                      style: TextStyle(
-                                        color: entry.isStarter ? const Color(0xFF10B981) : const Color(0xFF94A3B8),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ),
+                                  child: const Text('+ Aggiungi', style: TextStyle(color: Color(0xFF10B981), fontSize: 11, fontWeight: FontWeight.bold)),
                                 ),
                             ],
                           ),
@@ -290,7 +578,7 @@ class _TeamsScreenState extends State<TeamsScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
                       Expanded(
@@ -308,6 +596,7 @@ class _TeamsScreenState extends State<TeamsScreen> {
                             final name = nameCtrl.text.trim();
                             if (name.isEmpty) return;
 
+                            _sortRoster(currentRoster);
                             final newTeam = TeamModel(
                               id: existing?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
                               name: name,
@@ -316,9 +605,7 @@ class _TeamsScreenState extends State<TeamsScreen> {
                             );
 
                             await StorageService.saveSingleTeam(newTeam);
-                            if (ctx.mounted) {
-                              Navigator.pop(ctx);
-                            }
+                            if (ctx.mounted) Navigator.pop(ctx);
                             _loadData();
                           },
                           child: const Text('Salva Squadra', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -350,7 +637,7 @@ class _TeamsScreenState extends State<TeamsScreen> {
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            // Barra Ricerca e Ordinamento
+            // BARRA RICERCA ED ORDINAMENTO SQUADRE
             Row(
               children: [
                 Expanded(
@@ -382,6 +669,7 @@ class _TeamsScreenState extends State<TeamsScreen> {
                       DropdownMenuItem(value: 'ovr_desc', child: Text('OVR Decrescente')),
                       DropdownMenuItem(value: 'ovr_asc', child: Text('OVR Crescente')),
                       DropdownMenuItem(value: 'name_asc', child: Text('Nome A-Z')),
+                      DropdownMenuItem(value: 'name_desc', child: Text('Nome Z-A')),
                     ],
                     onChanged: (v) {
                       if (v != null) setState(() => _sortBy = v);
@@ -393,36 +681,72 @@ class _TeamsScreenState extends State<TeamsScreen> {
 
             const SizedBox(height: 10),
 
-            // Banner Selezione Partita (Se ci sono squadre selezionate)
+            // BANNER CASA VS OSPITI + TASTO BLU CON PALLONE
             if (_selectedHome != null || _selectedAway != null)
               Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFF334155))),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFF334155)),
+                ),
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Text(
-                        _selectedHome != null ? '🏠 CASA: ${_selectedHome!.name} (${_calculateStartersOvr(_selectedHome!)})' : 'Seleziona CASA',
-                        style: TextStyle(color: _selectedHome != null ? Color(_selectedHome!.colorValue) : const Color(0xFF94A3B8), fontWeight: FontWeight.bold, fontSize: 11),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _selectedHome != null ? '🏠 CASA: ${_selectedHome!.name} (${_calculateStartersOvr(_selectedHome!)})' : 'Seleziona CASA',
+                            style: TextStyle(
+                              color: _selectedHome != null ? Color(_selectedHome!.colorValue) : const Color(0xFF94A3B8),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Text('VS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 12)),
+                        ),
+                        Expanded(
+                          child: Text(
+                            _selectedAway != null ? '🚗 OSPITI: ${_selectedAway!.name} (${_calculateStartersOvr(_selectedAway!)})' : 'Seleziona OSPITI',
+                            style: TextStyle(
+                              color: _selectedAway != null ? Color(_selectedAway!.colorValue) : const Color(0xFF94A3B8),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11,
+                            ),
+                            textAlign: TextAlign.right,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
-                    const Padding(padding: EdgeInsets.symmetric(horizontal: 4), child: Text('VS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 12))),
-                    Expanded(
-                      child: Text(
-                        _selectedAway != null ? '🚗 OSPITI: ${_selectedAway!.name} (${_calculateStartersOvr(_selectedAway!)})' : 'Seleziona OSPITI',
-                        style: TextStyle(color: _selectedAway != null ? Color(_selectedAway!.colorValue) : const Color(0xFF94A3B8), fontWeight: FontWeight.bold, fontSize: 11),
-                        textAlign: TextAlign.right,
-                        overflow: TextOverflow.ellipsis,
+                    if (canLaunchMatch) ...[
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF3B82F6),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          onPressed: _dispatchToMatch,
+                          icon: const Icon(Icons.sports_soccer, size: 18),
+                          label: const Text('CARICA SU MATCH', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
 
-            // Elenco Squadre
+            // ELENCO DELLE SQUADRE CREATE
             Expanded(
               child: filteredTeams.isEmpty
                   ? const Center(child: Text('Nessuna squadra trovata. Creane una con il tasto +', style: TextStyle(color: Color(0xFF64748B))))
@@ -507,36 +831,19 @@ class _TeamsScreenState extends State<TeamsScreen> {
 
             const SizedBox(height: 10),
 
-            // Tasti Azione Inferiori: Crea Squadra & Carica su Match
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF334155)),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    onPressed: () => _openTeamEditor(),
-                    icon: const Icon(Icons.add, color: Colors.white, size: 18),
-                    label: const Text('Nuova Squadra', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  ),
+            // TASTO IN BASSO: CREA SQUADRA
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFF334155)),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                if (canLaunchMatch) ...[
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF10B981),
-                        foregroundColor: const Color(0xFF042F22),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      onPressed: _dispatchToMatch,
-                      icon: const Icon(Icons.play_arrow, size: 18),
-                      label: const Text('CARICA SU MATCH', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                ],
-              ],
+                onPressed: () => _openTeamEditor(),
+                icon: const Icon(Icons.add, color: Colors.white, size: 18),
+                label: const Text('Nuova Squadra', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
             ),
           ],
         ),
