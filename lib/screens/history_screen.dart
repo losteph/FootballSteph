@@ -812,7 +812,7 @@ class HistoryScreenState extends State<HistoryScreen> {
                               Expanded(
                                 child: Text(
                                   '${m.homeName} ${_getTeamEmoji(m.homeColorValue)}',
-                                  textAlign: TextAlign.right,
+                                  textAlign: TextAlign.center,
                                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15),
                                 ),
                               ),
@@ -820,7 +820,7 @@ class HistoryScreenState extends State<HistoryScreen> {
                               Expanded(
                                 child: Text(
                                   '${_getTeamEmoji(m.awayColorValue)} ${m.awayName}',
-                                  textAlign: TextAlign.left,
+                                  textAlign: TextAlign.center,
                                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15),
                                 ),
                               ),

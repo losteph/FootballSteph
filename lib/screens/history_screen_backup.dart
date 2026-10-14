@@ -765,7 +765,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(child: Text('${_getTeamEmoji(m.homeColorValue)} ${m.homeName}', textAlign: TextAlign.right, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15))),
+                    Expanded(child: Text('${_getTeamEmoji(m.homeColorValue)} ${m.homeName}', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15))),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Column(
@@ -776,7 +776,7 @@ class HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderS
                         ],
                       ),
                     ),
-                    Expanded(child: Text('${m.awayName} ${_getTeamEmoji(m.awayColorValue)}', textAlign: TextAlign.left, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15))),
+                    Expanded(child: Text('${m.awayName} ${_getTeamEmoji(m.awayColorValue)}', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15))),
                   ],
                 ),
               ],
