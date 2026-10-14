@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/player_model.dart';
 import '../models/match_history_model.dart';
 import '../models/team_model.dart';
+import '../models/tournament_model.dart';
 
 class StorageService {
   static const String _playersKey = 'calcetto_pro_players';
@@ -301,5 +302,42 @@ class StorageService {
     final teams = await loadTeams();
     teams.removeWhere((t) => t.id == teamId);
     await saveTeams(teams);
+  }
+
+  static const String _tournamentsKey = 'steph_tournaments_data';
+
+  static Future<List<TournamentModel>> loadTournaments() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonStr = prefs.getString(_tournamentsKey);
+    if (jsonStr == null || jsonStr.isEmpty) return [];
+    try {
+      final List<dynamic> decoded = jsonDecode(jsonStr);
+      return decoded.map((e) => TournamentModel.fromJson(e as Map<String, dynamic>)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<void> saveTournaments(List<TournamentModel> tournaments) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonStr = jsonEncode(tournaments.map((t) => t.toJson()).toList());
+    await prefs.setString(_tournamentsKey, jsonStr);
+  }
+
+  static Future<void> saveSingleTournament(TournamentModel tournament) async {
+    final list = await loadTournaments();
+    final idx = list.indexWhere((t) => t.id == tournament.id);
+    if (idx != -1) {
+      list[idx] = tournament;
+    } else {
+      list.insert(0, tournament);
+    }
+    await saveTournaments(list);
+  }
+
+  static Future<void> deleteTournament(String id) async {
+    final list = await loadTournaments();
+    list.removeWhere((t) => t.id == id);
+    await saveTournaments(list);
   }
 }

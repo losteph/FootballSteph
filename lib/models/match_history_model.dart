@@ -3,7 +3,7 @@ import 'match_event_model.dart';
 
 class MatchHistoryModel {
   final String id;
-  String title;
+  final String title;
   final String date;
   final String homeName;
   final String awayName;
@@ -16,6 +16,7 @@ class MatchHistoryModel {
   final List<MatchRosterPlayer> homeRoster;
   final List<MatchRosterPlayer> awayRoster;
   final List<MatchEventModel> events;
+  final String? tournamentId; // <-- OPZIONALE: se è null è un'Amichevole!
 
   MatchHistoryModel({
     required this.id,
@@ -32,6 +33,7 @@ class MatchHistoryModel {
     required this.homeRoster,
     required this.awayRoster,
     required this.events,
+    this.tournamentId, // <-- NON è required, quindi non dà errori nello Scoreboard!
   });
 
   Map<String, dynamic> toJson() => {
@@ -46,25 +48,36 @@ class MatchHistoryModel {
         'awayPenalties': awayPenalties,
         'homeColorValue': homeColorValue,
         'awayColorValue': awayColorValue,
-        'homeRoster': homeRoster.map((p) => p.toJson()).toList(),
-        'awayRoster': awayRoster.map((p) => p.toJson()).toList(),
+        'homeRoster': homeRoster.map((e) => e.toJson()).toList(),
+        'awayRoster': awayRoster.map((e) => e.toJson()).toList(),
         'events': events.map((e) => e.toJson()).toList(),
+        'tournamentId': tournamentId,
       };
 
   factory MatchHistoryModel.fromJson(Map<String, dynamic> json) => MatchHistoryModel(
-        id: json['id'].toString(),
-        title: json['title'] ?? 'Partita',
-        date: json['date'] ?? '',
-        homeName: json['homeName'] ?? 'CASA',
-        awayName: json['awayName'] ?? 'OSPITI',
-        homeScore: json['homeScore'] ?? 0,
-        awayScore: json['awayScore'] ?? 0,
-        homePenalties: json['homePenalties'] ?? 0,
-        awayPenalties: json['awayPenalties'] ?? 0,
-        homeColorValue: json['homeColorValue'] ?? 0xFF3B82F6,
-        awayColorValue: json['awayColorValue'] ?? 0xFFEF4444,
-        homeRoster: (json['homeRoster'] as List?)?.map((item) => MatchRosterPlayer.fromJson(item)).toList() ?? [],
-        awayRoster: (json['awayRoster'] as List?)?.map((item) => MatchRosterPlayer.fromJson(item)).toList() ?? [],
-        events: (json['events'] as List?)?.map((item) => MatchEventModel.fromJson(item)).toList() ?? [],
+        id: json['id'] as String,
+        title: json['title'] as String,
+        date: json['date'] as String,
+        homeName: json['homeName'] as String,
+        awayName: json['awayName'] as String,
+        homeScore: json['homeScore'] as int,
+        awayScore: json['awayScore'] as int,
+        homePenalties: json['homePenalties'] as int? ?? 0,
+        awayPenalties: json['awayPenalties'] as int? ?? 0,
+        homeColorValue: json['homeColorValue'] as int? ?? 0xFF3B82F6,
+        awayColorValue: json['awayColorValue'] as int? ?? 0xFFEF4444,
+        homeRoster: (json['homeRoster'] as List<dynamic>?)
+                ?.map((e) => MatchRosterPlayer.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            [],
+        awayRoster: (json['awayRoster'] as List<dynamic>?)
+                ?.map((e) => MatchRosterPlayer.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            [],
+        events: (json['events'] as List<dynamic>?)
+                ?.map((e) => MatchEventModel.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            [],
+        tournamentId: json['tournamentId'] as String?,
       );
 }

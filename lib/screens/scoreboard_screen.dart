@@ -15,6 +15,7 @@ class ScoreboardScreen extends StatefulWidget {
   final Color? initialHomeColor;
   final Color? initialAwayColor;
   final VoidCallback? onMatchFinished;
+  final String? initialTournamentId;
 
   const ScoreboardScreen({
     super.key,
@@ -25,6 +26,7 @@ class ScoreboardScreen extends StatefulWidget {
     this.initialHomeColor,
     this.initialAwayColor,
     this.onMatchFinished,
+    this.initialTournamentId,
   });
 
   @override
@@ -66,6 +68,8 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
   Color _homeColor = const Color(0xFF3B82F6);
   Color _awayColor = const Color(0xFFEF4444);
 
+  String? _activeTournamentId;
+
   late List<MatchRosterPlayer> _homePlayers;
   late List<MatchRosterPlayer> _awayPlayers;
   List<MatchRosterPlayer>? _initialLineupHome;
@@ -99,12 +103,14 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
   @override
   void initState() {
     super.initState();
+    _activeTournamentId = widget.initialTournamentId;
     _setupInitialRosters();
   }
 
   @override
   void didUpdateWidget(covariant ScoreboardScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _activeTournamentId = widget.initialTournamentId;
     if (widget.initialHomePlayers.isNotEmpty &&
         widget.initialHomePlayers != oldWidget.initialHomePlayers) {
       _setupInitialRosters();
@@ -537,6 +543,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
                 homeRoster: finalHomeRoster,
                 awayRoster: finalAwayRoster,
                 events: _events,
+                tournamentId: widget.initialTournamentId,
               );
 
               // 2. Salva nel database locale

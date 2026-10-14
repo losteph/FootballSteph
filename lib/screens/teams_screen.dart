@@ -723,6 +723,22 @@ class _TeamsScreenState extends State<TeamsScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        const SizedBox(width: 6),
+                        // TASTO DESELEZIONA RAPIDO
+                        InkWell(
+                          onTap: () => setState(() {
+                            _selectedHome = null;
+                            _selectedAway = null;
+                          }),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Icon(Icons.close, size: 15, color: Color(0xFFEF4444)),
+                          ),
+                        ),
                       ],
                     ),
                     if (canLaunchMatch) ...[
@@ -812,13 +828,35 @@ class _TeamsScreenState extends State<TeamsScreen> {
                                   icon: const Icon(Icons.edit, color: Color(0xFF64748B), size: 18),
                                   onPressed: () => _openTeamEditor(team),
                                 ),
+                                // SOSTITUISCI L'ICONBUTTON DELETE CON QUESTO CON CONFERMA:
                                 IconButton(
                                   icon: const Icon(Icons.delete, color: Color(0xFFEF4444), size: 18),
-                                  onPressed: () async {
-                                    await StorageService.deleteTeam(team.id);
-                                    if (_selectedHome?.id == team.id) _selectedHome = null;
-                                    if (_selectedAway?.id == team.id) _selectedAway = null;
-                                    _loadData();
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (dCtx) => AlertDialog(
+                                        backgroundColor: const Color(0xFF1E293B),
+                                        title: const Text('Conferma eliminazione', style: TextStyle(color: Colors.white)),
+                                        content: Text('Vuoi davvero eliminare la squadra "${team.name}"?', style: const TextStyle(color: Color(0xFF94A3B8))),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(dCtx),
+                                            child: const Text('Annulla', style: TextStyle(color: Color(0xFF94A3B8))),
+                                          ),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
+                                            onPressed: () async {
+                                              Navigator.pop(dCtx);
+                                              await StorageService.deleteTeam(team.id);
+                                              if (_selectedHome?.id == team.id) _selectedHome = null;
+                                              if (_selectedAway?.id == team.id) _selectedAway = null;
+                                              _loadData();
+                                            },
+                                            child: const Text('Elimina', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
                                   },
                                 ),
                               ],

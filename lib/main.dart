@@ -52,6 +52,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   Color _liveHomeColor = const Color(0xFF3B82F6);
   Color _liveAwayColor = const Color(0xFFEF4444);
 
+  String? _liveTournamentId;
+
   final GlobalKey<SquadBuilderScreenState> _squadKey = GlobalKey<SquadBuilderScreenState>();
   final GlobalKey<HistoryScreenState> _historyKey = GlobalKey<HistoryScreenState>();
 
@@ -63,7 +65,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       _liveAwayName = 'OSPITI';
       _liveHomeColor = const Color(0xFF3B82F6);
       _liveAwayColor = const Color(0xFFEF4444);
-      _currentIndex = 3; // Passa subito alla tab 3 (Scoreboard)
+      _liveTournamentId = null; // Amichevole
+      _currentIndex = 2; // Passa subito alla tab 3 (Scoreboard)
     });
   }
 
@@ -73,8 +76,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     String homeName,
     String awayName,
     Color homeColor,
-    Color awayColor,
-  ) {
+    Color awayColor, [
+    String? tournamentId,
+  ]) {
     setState(() {
       _liveHomePlayers = home;
       _liveAwayPlayers = away;
@@ -82,7 +86,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       _liveAwayName = awayName;
       _liveHomeColor = homeColor;
       _liveAwayColor = awayColor;
-      _currentIndex = 3; // Passa alla tab 3 (Match)
+      _liveTournamentId = tournamentId;
+      _currentIndex = 2; // Passa alla tab 3 (Match)
     });
   }
 
@@ -98,7 +103,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final List<Widget> screens = [
       DatabaseScreen(onDataChanged: () {_squadKey.currentState?.reload(); _historyKey.currentState?.reload();}),
       SquadBuilderScreen(key: _squadKey, onSendToScoreboard: _handleSquadsToMatch),
-      TeamsScreen(onLoadMatch: _handleTeamsToMatch),
       ScoreboardScreen(
         initialHomePlayers: _liveHomePlayers,
         initialAwayPlayers: _liveAwayPlayers,
@@ -107,8 +111,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         initialHomeColor: _liveHomeColor,
         initialAwayColor: _liveAwayColor,
         onMatchFinished: _goToHistory,
+        initialTournamentId: _liveTournamentId,
       ),
-      HistoryScreen(key: _historyKey),
+      TeamsScreen(onLoadMatch: _handleTeamsToMatch),
+      HistoryScreen(key: _historyKey, onLoadTournamentMatch: _handleTeamsToMatch),
     ];
 
     return Scaffold(
@@ -126,7 +132,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
+          onTap: (index) {
+            setState(() => _currentIndex = index);
+            if (index == 4) {
+              _historyKey.currentState?.reload();
+            }
+          },
           backgroundColor: const Color(0xFF111827),
           selectedItemColor: const Color(0xFF10B981),
           unselectedItemColor: const Color(0xFF94A3B8),
@@ -145,19 +156,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               label: 'Bilaniciatore',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.groups_outlined),
-              activeIcon: Icon(Icons.groups),
-              label: 'Squadre',
-            ),
-            BottomNavigationBarItem(
               icon: Icon(Icons.sports_soccer_outlined),
               activeIcon: Icon(Icons.sports_soccer),
               label: 'Match',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.leaderboard_outlined),
-              activeIcon: Icon(Icons.leaderboard),
-              label: 'Stats',
+              icon: Icon(Icons.groups_outlined),
+              activeIcon: Icon(Icons.groups),
+              label: 'Squadre',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.emoji_events_outlined),
+              activeIcon: Icon(Icons.emoji_events),
+              label: 'Leghe',
             ),
           ],
         ),
