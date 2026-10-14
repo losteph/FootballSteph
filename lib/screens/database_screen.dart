@@ -211,6 +211,22 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildFilterChip('Tutti', 'ALL', _tierFilter, (v) => setState(() => _tierFilter = v)),
+                      _buildFilterChip('🥇', 'GOLD', _tierFilter, (v) => setState(() => _tierFilter = v)),
+                      _buildFilterChip('🥈', 'SILVER', _tierFilter, (v) => setState(() => _tierFilter = v)),
+                      _buildFilterChip('🥉', 'BRONZE', _tierFilter, (v) => setState(() => _tierFilter = v)),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+
               IconButton(
                 onPressed: _showBackupDialog,
                 icon: const Icon(Icons.cloud_sync, color: Color(0xFF94A3B8), size: 22),
@@ -299,20 +315,6 @@ class _DatabaseScreenState extends State<DatabaseScreen> {
               _buildFilterChip('DIF', 'DIF', _roleFilter, (v) => setState(() => _roleFilter = v)),
               _buildFilterChip('CEN', 'CEN', _roleFilter, (v) => setState(() => _roleFilter = v)),
               _buildFilterChip('ATT', 'ATT', _roleFilter, (v) => setState(() => _roleFilter = v)),
-            ],
-          ),
-        ),
-
-        // Filtri per Livello Metallo
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: Row(
-            children: [
-              _buildFilterChip('Tutti i Livelli', 'ALL', _tierFilter, (v) => setState(() => _tierFilter = v)),
-              _buildFilterChip('🥇', 'GOLD', _tierFilter, (v) => setState(() => _tierFilter = v)),
-              _buildFilterChip('🥈', 'SILVER', _tierFilter, (v) => setState(() => _tierFilter = v)),
-              _buildFilterChip('🥉', 'BRONZE', _tierFilter, (v) => setState(() => _tierFilter = v)),
             ],
           ),
         ),
