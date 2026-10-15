@@ -1,19 +1,12 @@
-// ignore_for_file: avoid_web_libraries_in_flutter
-import 'dart:js_interop';
-
-@JS('window.playCustomSound')
-external void _jsPlaySound(JSString type);
+// Se compila per il Web carica sound_service_web.dart, altrimenti carica sound_service_mobile.dart!
+import 'sound_service_mobile.dart' if (dart.library.js_interop) 'sound_service_web.dart';
 
 class SoundService {
   static void playWhistle() {
-    try {
-      _jsPlaySound('whistle'.toJS);
-    } catch (_) {}
+    playCustomSound('whistle');
   }
 
   static void playBell() {
-    try {
-      _jsPlaySound('bell'.toJS);
-    } catch (_) {}
+    playCustomSound('bell');
   }
 }

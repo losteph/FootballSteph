@@ -304,6 +304,89 @@ class StorageService {
     await saveTeams(teams);
   }
 
+  // ------------------------------------------------------------
+  // EXPORT SQUADRE
+  // ------------------------------------------------------------
+  static Future<bool> exportTeamsToFile(
+    List<TeamModel> teams,
+  ) async {
+    try {
+      final jsonStr = const JsonEncoder.withIndent('  ').convert(
+        teams.map((t) => t.toJson()).toList(),
+      );
+
+      final bytes = Uint8List.fromList(utf8.encode(jsonStr));
+
+      final result = await FilePicker.saveFile(
+        dialogTitle: 'Salva backup squadre',
+        fileName: 'squadre.json',
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        bytes: bytes,
+        mimeType: 'application/json',
+      );
+
+      return result != null;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // ------------------------------------------------------------
+  // IMPORT SQUADRE - MERGE
+  // ------------------------------------------------------------
+  static Future<bool> pickAndImportTeamsMerge() async {
+    try {
+      final file = await FilePicker.pickFile(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+
+      if (file == null) {
+        return false;
+      }
+
+      final bytes = await file.readAsBytes();
+
+      if (bytes.isEmpty) {
+        return false;
+      }
+
+      final content = utf8.decode(bytes);
+      final decoded = jsonDecode(content);
+
+      if (decoded is! List) {
+        return false;
+      }
+
+      final newTeams = decoded
+          .map(
+            (item) => TeamModel.fromJson(
+              Map<String, dynamic>.from(item),
+            ),
+          )
+          .toList();
+
+      final existing = await loadTeams();
+
+      // Merge per ID: se esiste già la aggiorna, altrimenti la aggiunge
+      for (final team in newTeams) {
+        final idx = existing.indexWhere((t) => t.id == team.id);
+        if (idx != -1) {
+          existing[idx] = team;
+        } else {
+          existing.add(team);
+        }
+      }
+
+      await saveTeams(existing);
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   static const String _tournamentsKey = 'steph_tournaments_data';
 
   static Future<List<TournamentModel>> loadTournaments() async {

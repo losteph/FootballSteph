@@ -61,6 +61,81 @@ class _TeamsScreenState extends State<TeamsScreen> {
     }
   }
 
+
+  // Finestra di Dialogo per Backup e Ripristino Squadre
+  void _showBackupDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        title: const Text(
+          'Gestione Squadre',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Scarica o carica il file JSON delle squadre. L\'importazione unirà le nuove squadre senza eliminare quelle attuali.',
+              style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () async {
+                final success = await StorageService.exportTeamsToFile(_teams);
+                if (mounted && success) {
+                  if (ctx.mounted) {
+                    Navigator.pop(ctx);
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('File squadre esportato!'),
+                      backgroundColor: Color(0xFF10B981),
+                    ),
+                  );
+                }
+              },
+              icon: const Icon(Icons.download, size: 18),
+              label: const Text('Scarica File Backup', style: TextStyle(fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+                foregroundColor: const Color(0xFF042F22),
+                minimumSize: const Size.fromHeight(40),
+              ),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: () async {
+                final success = await StorageService.pickAndImportTeamsMerge();
+                if (success) {
+                  _loadData();
+                  if (mounted) {
+                    if (ctx.mounted) {
+                      Navigator.pop(ctx);
+                    }
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('File squadre caricato con successo!'),
+                        backgroundColor: Color(0xFF10B981),
+                      ),
+                    );
+                  }
+                }
+              },
+              icon: const Icon(Icons.file_upload_outlined, size: 18),
+              label: const Text('Carica File Backup'),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFF334155)),
+                foregroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(40),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   int _getRolePriority(PlayerRole role) {
     switch (role) {
       case PlayerRole.POR:
@@ -675,6 +750,12 @@ class _TeamsScreenState extends State<TeamsScreen> {
                       if (v != null) setState(() => _sortBy = v);
                     },
                   ),
+                ),
+                const SizedBox(width: 6),
+                IconButton(
+                  onPressed: _showBackupDialog,
+                  icon: const Icon(Icons.cloud_sync, color: Color(0xFF94A3B8), size: 22),
+                  tooltip: 'Backup / Ripristino Squadre',
                 ),
               ],
             ),
