@@ -95,7 +95,7 @@ class StorageService {
 
       final result = await FilePicker.saveFile(
         dialogTitle: 'Salva backup giocatori',
-        fileName: 'database_giocatori.json',
+        fileName: 'player.json',
         type: FileType.custom,
         allowedExtensions: ['json'],
         bytes: bytes,
@@ -124,7 +124,7 @@ class StorageService {
 
       final result = await FilePicker.saveFile(
         dialogTitle: 'Salva backup partite',
-        fileName: 'storico_partite.json',
+        fileName: 'match.json',
         type: FileType.custom,
         allowedExtensions: ['json'],
         bytes: bytes,
@@ -319,7 +319,7 @@ class StorageService {
 
       final result = await FilePicker.saveFile(
         dialogTitle: 'Salva backup squadre',
-        fileName: 'squadre.json',
+        fileName: 'teams.json',
         type: FileType.custom,
         allowedExtensions: ['json'],
         bytes: bytes,
