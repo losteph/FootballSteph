@@ -1043,25 +1043,27 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
               final aEmoji = _getTeamEmoji(_awayColor);
               var text = '⭐ *PAGELLE MATCH*\n⚽ ${_homeNameCtrl.text} $_homeScore - $_awayScore ${_awayNameCtrl.text}\n\n';
               
-              String buildTeamPagelleText(String teamName, String emoji, List<Map<String, dynamic>> list) {
-                String out = '$emoji *$teamName*\n';
-                final starters = list.where((r) => r['inField'] != false).toList();
-                final bench = list.where((r) => r['inField'] == false).toList();
+              String buildTeamPagelle(String teamName, String emoji, List<MatchRosterPlayer> initRoster, List<Map<String, dynamic>> rateList) {
+                String block = '$emoji *$teamName*\n';
+                final inField = initRoster.where((p) => p.inField).toList();
+                final bench = initRoster.where((p) => !p.inField).toList();
 
-                for (final r in starters) {
-                  out += '• _#${r['num']} ${r['name']}:_ *${r['score']}*\n';
+                for (var p in inField) {
+                  final r = rateList.firstWhere((x) => x['num'] == p.num, orElse: () => {'score': 'SV'});
+                  block += '• _#${p.num} ${p.name}:_ *${r['score']}*\n';
                 }
                 if (bench.isNotEmpty) {
-                  out += '  -- _Panchina_ --\n';
-                  for (final r in bench) {
-                    out += '• _#${r['num']} ${r['name']}:_ *${r['score']}*\n';
+                  block += '  -- _Panchina_ --\n';
+                  for (var p in bench) {
+                    final r = rateList.firstWhere((x) => x['num'] == p.num, orElse: () => {'score': 'SV'});
+                    block += '• _#${p.num} ${p.name}:_ *${r['score']}*\n';
                   }
                 }
-                return out;
+                return block;
               }
 
-              text += buildTeamPagelleText(_homeNameCtrl.text, hEmoji, ratings['home']!);
-              text += '\n${buildTeamPagelleText(_awayNameCtrl.text, aEmoji, ratings['away']!)}';
+              text += buildTeamPagelle(_homeNameCtrl.text, hEmoji, _initialLineupHome ?? _homePlayers, ratings['home']!);
+              text += '\n${buildTeamPagelle(_awayNameCtrl.text, aEmoji, _initialLineupAway ?? _awayPlayers, ratings['away']!)}';
               
               await Clipboard.setData(ClipboardData(text: text));
               if (mounted) {
