@@ -42,7 +42,7 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _currentIndex = 0;
+  int _currentIndex = 2;
 
 
   List<MatchRosterPlayer> _liveHomePlayers = [];

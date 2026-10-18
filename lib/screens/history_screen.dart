@@ -596,7 +596,7 @@ class HistoryScreenState extends State<HistoryScreen> {
         final playedEnough = p.playedSeconds >= 300;
 
         if (!hasAction && !playedEnough) {
-          res[team]!.add({'id': p.dbId, 'num': p.num, 'name': p.name, 'score': 'SV', 'details': 'Meno di 5m', 'numScore': 0.0, 'isWinner': teamWon, 'bonusCount': 0});
+          res[team]!.add({'id': p.dbId, 'num': p.num, 'name': p.name, 'score': 'SV', 'details': 'Meno di 5m', 'numScore': 0.0, 'isWinner': teamWon, 'bonusCount': 0, 'inField': p.inField});
           continue;
         }
 
@@ -634,6 +634,7 @@ class HistoryScreenState extends State<HistoryScreen> {
           'bigCreated': bigCreated,
           'malusCount': fouls + errors + (yellows * 2) + (reds * 4),
           'playedSeconds': p.playedSeconds,
+          'inField': p.inField,
         };
 
         res[team]!.add(pData);
@@ -865,7 +866,7 @@ class HistoryScreenState extends State<HistoryScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 4),
-                                ...ratings['home']!.map((r) => _buildPagellaRow(r)),
+                                ..._buildPagelleListWithBench(ratings['home']!),
                                 const Divider(color: Color(0xFF334155), height: 24),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -875,7 +876,7 @@ class HistoryScreenState extends State<HistoryScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 4),
-                                ...ratings['away']!.map((r) => _buildPagellaRow(r)),
+                                ..._buildPagelleListWithBench(ratings['away']!),
                               ],
                             ),
                           ),
@@ -990,6 +991,53 @@ class HistoryScreenState extends State<HistoryScreen> {
         },
       ),
     );
+  }
+
+
+  Widget _buildBenchDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: const [
+          Expanded(child: Divider(color: Color(0xFF334155), thickness: 1)),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              'PANCHINA',
+              style: TextStyle(
+                color: Color(0xFF94A3B8),
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.8,
+              ),
+            ),
+          ),
+          Expanded(child: Divider(color: Color(0xFF334155), thickness: 1)),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildPagelleListWithBench(List<Map<String, dynamic>> rawList) {
+    final list = List<Map<String, dynamic>>.from(rawList);
+    // Ordina: prima titolari (inField: true), poi panchina (inField: false)
+    list.sort((a, b) {
+      final aSt = a['inField'] != false ? 1 : 0;
+      final bSt = b['inField'] != false ? 1 : 0;
+      return bSt.compareTo(aSt);
+    });
+
+    final List<Widget> widgets = [];
+    bool benchDividerShown = false;
+
+    for (final r in list) {
+      if (r['inField'] == false && !benchDividerShown) {
+        widgets.add(_buildBenchDivider());
+        benchDividerShown = true;
+      }
+      widgets.add(_buildPagellaRow(r));
+    }
+    return widgets;
   }
 
   Widget _buildPagellaRow(Map<String, dynamic> r) {

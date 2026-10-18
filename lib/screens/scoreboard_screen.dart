@@ -625,7 +625,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
         final playedEnough = p.playedSeconds >= 300;
 
         if (!hasAction && !playedEnough) {
-          res[team]!.add({'num': p.num, 'name': p.name, 'score': 'SV', 'details': 'Meno di 5m e nessuna azione attiva'});
+          res[team]!.add({'num': p.num, 'name': p.name, 'score': 'SV', 'details': 'Meno di 5m e nessuna azione attiva', 'inField': p.inField});
           continue;
         }
 
@@ -670,6 +670,7 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
           'name': p.name,
           'score': score.clamp(1.0, 10.0).toStringAsFixed(1),
           'details': details.isNotEmpty ? details.join(', ') : 'Base 6.0',
+          'inField': p.inField,
         });
       }
     }
@@ -1042,15 +1043,25 @@ class _ScoreboardScreenState extends State<ScoreboardScreen> {
               final aEmoji = _getTeamEmoji(_awayColor);
               var text = '⭐ *PAGELLE MATCH*\n⚽ ${_homeNameCtrl.text} $_homeScore - $_awayScore ${_awayNameCtrl.text}\n\n';
               
-              text += '$hEmoji *${_homeNameCtrl.text}*\n';
-              for (final r in ratings['home']!) {
-                text += '• _#${r['num']} ${r['name']}:_ *${r['score']}*\n';
+              String buildTeamPagelleText(String teamName, String emoji, List<Map<String, dynamic>> list) {
+                String out = '$emoji *$teamName*\n';
+                final starters = list.where((r) => r['inField'] != false).toList();
+                final bench = list.where((r) => r['inField'] == false).toList();
+
+                for (final r in starters) {
+                  out += '• _#${r['num']} ${r['name']}:_ *${r['score']}*\n';
+                }
+                if (bench.isNotEmpty) {
+                  out += '  -- _Panchina_ --\n';
+                  for (final r in bench) {
+                    out += '• _#${r['num']} ${r['name']}:_ *${r['score']}*\n';
+                  }
+                }
+                return out;
               }
-              
-              text += '\n$aEmoji *${_awayNameCtrl.text}*\n';
-              for (final r in ratings['away']!) {
-                text += '• _#${r['num']} ${r['name']}:_ *${r['score']}*\n';
-              }
+
+              text += buildTeamPagelleText(_homeNameCtrl.text, hEmoji, ratings['home']!);
+              text += '\n${buildTeamPagelleText(_awayNameCtrl.text, aEmoji, ratings['away']!)}';
               
               await Clipboard.setData(ClipboardData(text: text));
               if (mounted) {
