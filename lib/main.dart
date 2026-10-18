@@ -102,7 +102,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     // I 4 schermi dell'applicazione (per ora segnaposto)
     final List<Widget> screens = [
       DatabaseScreen(onDataChanged: () {_squadKey.currentState?.reload(); _historyKey.currentState?.reload();}),
-      SquadBuilderScreen(key: _squadKey, onSendToScoreboard: _handleSquadsToMatch),
+      TeamsScreen(onLoadMatch: _handleTeamsToMatch),
       ScoreboardScreen(
         initialHomePlayers: _liveHomePlayers,
         initialAwayPlayers: _liveAwayPlayers,
@@ -113,7 +113,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         onMatchFinished: _goToHistory,
         initialTournamentId: _liveTournamentId,
       ),
-      TeamsScreen(onLoadMatch: _handleTeamsToMatch),
+      SquadBuilderScreen(key: _squadKey, onSendToScoreboard: _handleSquadsToMatch),
       HistoryScreen(key: _historyKey, onLoadTournamentMatch: _handleTeamsToMatch),
     ];
 
@@ -148,12 +148,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.badge_outlined),
               activeIcon: Icon(Icons.badge),
-              label: 'Database',
+              label: 'Giocatori',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shuffle),
-              activeIcon: Icon(Icons.shuffle),
-              label: 'Bilaniciatore',
+              icon: Icon(Icons.groups_outlined),
+              activeIcon: Icon(Icons.groups),
+              label: 'Squadre',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.sports_soccer_outlined),
@@ -161,9 +161,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               label: 'Match',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.groups_outlined),
-              activeIcon: Icon(Icons.groups),
-              label: 'Squadre',
+              icon: Icon(Icons.shuffle),
+              activeIcon: Icon(Icons.shuffle),
+              label: 'Builder',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.emoji_events_outlined),
