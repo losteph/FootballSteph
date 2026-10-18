@@ -1,12 +1,24 @@
-// Se compila per il Web carica sound_service_web.dart, altrimenti carica sound_service_mobile.dart!
-import 'sound_service_mobile.dart' if (dart.library.js_interop) 'sound_service_web.dart';
+
+import 'package:audioplayers/audioplayers.dart';
 
 class SoundService {
+  static final AudioPlayer _player = AudioPlayer();
+
   static void playWhistle() {
-    playCustomSound('whistle');
+    _play('sounds/whistle.wav');
   }
 
   static void playBell() {
-    playCustomSound('bell');
+    _play('sounds/bell.wav');
+  }
+
+  static Future<void> _play(String path) async {
+    try {
+      await _player.stop();
+      await _player.setVolume(1.0);
+      await _player.play(AssetSource(path));
+    } catch (e) {
+      // Gestisce silenziosamente eventuali eccezioni di riproduzione
+    }
   }
 }
