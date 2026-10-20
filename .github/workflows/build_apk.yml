@@ -20,8 +20,7 @@ jobs:
       - name: Configura Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.5'
-          cache: true
+          channel: 'stable'
 
       - name: Installa i pacchetti (pub get)
         run: flutter pub get
