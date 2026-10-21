@@ -38,6 +38,15 @@ jobs:
       - name: Genera APK Release
         run: flutter build apk --release
 
+      - name: Diagnostica regole R8
+        if: always()
+        run: |
+          echo "=== REGOLE R8 MANCANTI ==="
+          find build -name missing_rules.txt -print
+          if [ -f build/app/outputs/mapping/release/missing_rules.txt ]; then
+            cat build/app/outputs/mapping/release/missing_rules.txt
+          fi
+
       - name: Carica APK pronto per il download
         uses: actions/upload-artifact@v4
         with:
