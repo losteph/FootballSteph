@@ -23,15 +23,14 @@ jobs:
           channel: stable
           flutter-version: 3.47.7
 
-      - name: Verifica configurazione Gradle
+      - name: Diagnostica wrapper Gradle
         run: |
-          echo "=== COMMIT ==="
-          git log -1 --oneline
-          echo "=== GRADLE WRAPPER ==="
-          cat android/gradle/wrapper/gradle-wrapper.properties
-          echo "=== VERSIONE GRADLE EFFETTIVA ==="
-          cd android
-          ./gradlew --version
+          echo "=== CONTENUTO ANDROID ==="
+          ls -la android/
+          echo "=== FILE WRAPPER ==="
+          find android/gradle -maxdepth 3 -type f -print
+          echo "=== FILE GRADLE NEL REPOSITORY ==="
+          find . -maxdepth 3 -name "gradlew*" -print
 
       - name: Installa i pacchetti (pub get)
         run: flutter pub get
