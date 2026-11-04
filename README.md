@@ -1,10 +1,14 @@
 <div align="center">
 
+<img src="calcio.svg" width="110" alt="FootballSteph Logo">
+
 # ⚽ Football Steph
 
 **La piattaforma completa offline-first sviluppata in Flutter per gestire partite amatoriali di calcetto, formazioni bilanciate, club, tornei a classifica e pagelline automatiche.**
 
 [![Web App PWA](https://img.shields.io/badge/PWA-Football_Steph-3B82F6?style=for-the-badge&logo=googlechrome&logoColor=white)](https://losteph.github.io/FootballSteph/)
+
+[![Android APK](https://img.shields.io/badge/Android-Scarica_APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/losteph/FootballSteph/releases/latest)
 
 </div>
 
