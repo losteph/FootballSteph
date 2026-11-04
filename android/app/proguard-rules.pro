@@ -1,2 +1,3 @@
 
--dontwarn androidx.window.extensions.area.ExtensionWindowAreaPresentation
+-dontwarn androidx.window.extensions.**
+-dontwarn androidx.window.sidecar.**
