@@ -8,7 +8,7 @@
 
 [![Web App PWA](https://img.shields.io/badge/PWA-Football_Steph-3B82F6?style=for-the-badge&logo=googlechrome&logoColor=white)](https://losteph.github.io/FootballSteph/)
 
-[![Android APK](https://img.shields.io/badge/Android-Scarica_APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/losteph/FootballSteph/releases/latest)
+[![Android APK](https://img.shields.io/badge/Android-Scarica_APK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/losteph/FootballSteph/releases/latest/download/app-release.apk)
 
 </div>
 
